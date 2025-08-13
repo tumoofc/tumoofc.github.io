@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TumoCoin Metadata Update</title>
+    <script src="https://unpkg.com/@solana/web3.js@1.87.6/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/@metaplex-foundation/mpl-token-metadata@2.10.2/dist/mpl-token-metadata.umd.min.js"></script>
+</head>
+<body>
+<h2>TumoCoin Metadata Update Tool</h2>
+<p>Connecting to Phantom...</p>
+<script>
+(async () => {
+    try {
+        const mintAddress = "9rmdEeXQnCC5qnKu3gasBrahSLEeYYcZA4UzQzA4CwtQA";
+        const newUri = "ipfs://bafkreifl3pt64ahavvwoacpfc6echokvs2uudlv2tlgwy3iyktlkewjt2a";
+        const name = "TumoCoin";
+        const symbol = "TMC";
+
+        // Connect to Phantom
+        if (!window.solana || !window.solana.isPhantom) {
+            document.body.innerHTML += "<p style='color:red;'>Phantom wallet not found. Please install Phantom.</p>";
+            return;
+        }
+        await window.solana.connect();
+        const publicKey = window.solana.publicKey;
+        document.body.innerHTML += `<p>Connected wallet: ${publicKey.toBase58()}</p>`;
+
+        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
+
+        const TOKEN_METADATA_PROGRAM_ID = new solanaWeb3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+        const mintPubkey = new solanaWeb3.PublicKey(mintAddress);
+        const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
+            [Buffer.from("metadata"), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mintPubkey.toBuffer()],
+            TOKEN_METADATA_PROGRAM_ID
+        );
+
+        const dataV2 = new mplTokenMetadata.DataV2({
+            name: name,
+            symbol: symbol,
+            uri: newUri,
+            sellerFeeBasisPoints: 0,
+            creators: null,
+            collection: null,
+            uses: null
+        });
+
+        const ix = mplTokenMetadata.createUpdateMetadataAccountV2Instruction({
+            metadata: metadataPDA,
+            updateAuthority: publicKey,
+        }, {
+            updateMetadataAccountArgsV2: {
+                data: dataV2,
+                updateAuthority: publicKey,
+                primarySaleHappened: null,
+                isMutable: true
+            }
+        });
+
+        const tx = new solanaWeb3.Transaction().add(ix);
+        tx.feePayer = publicKey;
+        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+        const signed = await window.solana.signTransaction(tx);
+        const sig = await connection.sendRawTransaction(signed.serialize());
+        document.body.innerHTML += `<p>✅ Transaction sent: <a href="https://explorer.solana.com/tx/${sig}?cluster=mainnet-beta" target="_blank">${sig}</a></p>`;
+    } catch (err) {
+        console.error(err);
+        document.body.innerHTML += `<p style='color:red;'>Error: ${err.message}</p>`;
+    }
+})();
+</script>
+</body>
+</html>

@@ -56,7 +56,7 @@
       text-decoration: none;
       font-size: 1.2em;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      margin: 18px 0;
+      margin: 18px 0 25px 0;
     }
     .about-btn:hover {
       background-color: #ffcc00;
@@ -64,8 +64,8 @@
     /* Character */
     .bot-character {
       display: block;
-      margin: 20px auto;
-      height: 140px;
+      margin: 30px auto 0 auto; /* 위쪽 여백 늘림 */
+      height: 170px; /* 크기 확대 */
       width: auto;
     }
     /* List */
@@ -75,7 +75,7 @@
       font-size: 1.15rem;
       line-height: 1.8;
       color: #1a1a1a;
-      margin: 18px 0 0;
+      margin: 20px 0 0;
       text-align: left;
       display: inline-block;
     }
@@ -113,8 +113,8 @@
 <body>
   <div class="container">
     <!-- Top Icons -->
-    <div class="header-icons" style="display:flex;justify-content:center;align-items:center;gap:20px;">
-      <img src="./assets/ChatG.png" alt="Tumo Bot Face" style="height:140px;width:auto;">
+    <div class="header-icons" style="display:flex;justify-content:center;align-items:center;gap:15px;">
+      <img src="./assets/ChatG_no_bg.png" alt="Tumo Bot Face" style="height:140px;width:auto;">
       <img src="./assets/512TMC.png" alt="Tumo Coin" style="height:140px;width:auto;">
     </div>
 
@@ -132,7 +132,7 @@
     <a href="#about" class="about-btn">🌐 About TUMO</a>
 
     <!-- Character -->
-    <img src="./assets/tutu.png" alt="Tumo Bot" class="bot-character">
+    <img src="./assets/tutu_no_bg.png" alt="Tumo Bot" class="bot-character">
 
     <!-- Info List -->
     <ul>

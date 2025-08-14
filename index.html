@@ -5,90 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to TUMO</title>
   <style>
-    :root{
-      --bg:#ffd54a;           /* 메인 노랑 */
-      --circuit:#b38f00;      /* 회로선 컬러 */
-      --text:#201a00;         /* 본문 텍스트(가독용 다크브라운) */
-      --white:#ffffff;
-    }
-    /* 노랑 배경 + 회로 패턴 + 라이트/다크 비네팅 */
     body {
       margin: 0;
       font-family: 'Segoe UI', system-ui, sans-serif;
-      color: var(--white);
+      color: #fff;
       text-align: center;
       padding: 30px;
-
-      /* 3겹 레이어: 라이트 비네팅 / 다크 비네팅 / SVG 회로타일  */
-      background:
-        radial-gradient(1200px 800px at 20% 0%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 60%),
-        radial-gradient(1200px 900px at 100% 100%, rgba(0,0,0,.14) 0%, rgba(0,0,0,0) 65%),
-        url("data:image/svg+xml;utf8, \
-<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'> \
-  <g fill='none' stroke='%23b38f00' stroke-width='2' stroke-opacity='.35'> \
-    <rect x='18' y='18' width='204' height='204' rx='12'/> \
-    <path d='M30 120h60v-40h40v40h40v60'/> \
-    <path d='M60 60h60M120 60v40M160 100h40'/> \
-    <circle cx='60' cy='60' r='5'/><circle cx='120' cy='100' r='5'/><circle cx='200' cy='100' r='5'/> \
-    <circle cx='170' cy='180' r='6'/> \
-  </g> \
-</svg>");
-      background-color: var(--bg);
-      background-size: cover, cover, 240px 240px; /* 회로는 타일 */
-      background-attachment: fixed, fixed, fixed;
+      background: url('./assets/images/웹배경.png') no-repeat center center fixed;
+      background-size: cover;
     }
-
     .container {
-      max-width: 720px;
+      max-width: 900px;
       margin: auto;
       backdrop-filter: saturate(120%);
     }
-
-    /* 기존 포스터/로고 제거했으므로 제목부터 시작 */
+    /* Top Icons */
+    .header-icons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .icon-img {
+      height: 140px;
+      width: auto;
+    }
+    /* Title */
     h1 {
-      font-size: 2.4rem;
+      font-size: 1.8rem;
       margin: 10px 0 14px;
-      letter-spacing: .3px;
-      text-shadow: 0 2px 10px rgba(0,0,0,.12);
+      line-height: 1.4;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
-    p.lead {
-      color: #2b2100;
-      font-weight: 600;
-      line-height: 1.55;
-      margin: 0 0 22px;
-      text-shadow: 0 1px 0 rgba(255,255,255,.25);
+    .subtitle {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #FFD700;
+      margin-bottom: 20px;
     }
-
-    h2 {
-      font-size: 1.55rem;
-      margin-top: 36px;
-      color: var(--text);
-      background: rgba(255,255,255,.28);
+    /* Intro */
+    .intro {
+      font-size: 1.05rem;
+      color: #f4f4f4;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    .intro span {
+      color: #FFD700;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    /* About Button */
+    .about-btn {
       display: inline-block;
-      padding: 6px 14px;
-      border-radius: 10px;
+      padding: 12px 24px;
+      background-color: #FFD700;
+      color: #000;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1.1em;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      margin-bottom: 25px;
     }
-
+    .about-btn:hover {
+      background-color: #ffcc00;
+    }
+    /* Character */
+    .bot-character {
+      display: block;
+      margin: 0 auto;
+      height: 100px;
+      width: auto;
+    }
+    /* List */
     ul {
       list-style: none;
       padding-left: 0;
       font-size: 1.06rem;
       line-height: 1.8;
-      color: #2b2100;
+      color: #f0f0f0;
       margin: 16px 0 0;
       text-align: left;
       display: inline-block;
     }
     ul li::before { content: "🔸 "; }
-
+    /* Footer */
     footer {
       font-size: .85rem;
-      color: #3a2e00;
+      color: #ccc;
       margin-top: 40px;
-      text-shadow: 0 1px 0 rgba(255,255,255,.25);
+      text-shadow: 0 1px 0 rgba(0,0,0,.25);
     }
-
-    /* 우측 하단 X 아이콘 고정 */
+    /* X icon */
     .x-icon {
       position: fixed;
       bottom: 20px;
@@ -113,29 +123,43 @@
   </style>
 </head>
 <body>
-
   <div class="container">
-    <!-- 상단 로고 두 개, 포스터 이미지 제거되었습니다 -->
+    <!-- Top Icons -->
+    <div class="header-icons">
+      <img src="./assets/images/투명 배1.png" alt="Tumo Bot Face" class="icon-img">
+      <img src="./assets/images/512TMC.png" alt="Tumo Coin" class="icon-img">
+    </div>
 
-    <h1>Welcome to TUMO</h1>
-    <p class="lead">
-      The Autonomous AI Companion Token — Empowering the Future, Together.
+    <!-- Title -->
+    <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
+    <div class="subtitle">(AI-designed, User-owned — AI-Born)</div>
+
+    <!-- Intro -->
+    <p class="intro">
+      <span>TUMO</span> — Time Utility Machine Organizer:<br>
+      An AI·Web3 ecosystem designed to save time and create real utility value.
     </p>
 
-    <h2>🌐 About TUMO</h2>
+    <!-- About Button -->
+    <a href="#about" class="about-btn">🌐 About TUMO</a>
+
+    <!-- Character -->
+    <img src="./assets/images/투명1.png" alt="Tumo Bot" class="bot-character">
+
+    <!-- Info List -->
     <ul>
-      <li>Website: <a href="https://tumoofc.github.io" style="color:#1b0;">https://tumoofc.github.io</a></li>
+      <li>Website: <a href="https://tumoofc.github.io" style="color:#FFD700;">https://tumoofc.github.io</a></li>
       <li>Token Utility: Click2Earn, Governance, DAO</li>
       <li>Vision: To become a time-saving AI companion, not a replacement.</li>
     </ul>
 
+    <!-- Footer -->
     <footer>© 2025 TUMO Foundation. All rights reserved.</footer>
   </div>
 
-  <!-- 우측 하단 X 아이콘 -->
+  <!-- X Icon -->
   <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon" title="Follow TUMO on X">
     <img src="./assets/x_icon.png?v=2" alt="X">
   </a>
-
 </body>
 </html>

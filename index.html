@@ -17,33 +17,34 @@
       max-width: 900px;
       margin: auto;
     }
-    /* 텍스트 가독성 */
-    h1, .subtitle, .intro, ul, footer {
-      color: #1a1a1a;
-      background: rgba(255, 255, 255, 0.7);
-      padding: 8px 14px;
-      border-radius: 8px;
-      display: inline-block;
-    }
+    /* 제목 */
     h1 {
-      font-size: 2.2rem;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #1a1a1a;
+      text-shadow: 1px 1px 3px rgba(255,255,255,0.6);
       margin-bottom: 10px;
-      font-weight: bold;
     }
+    /* 부제 */
     .subtitle {
-      font-size: 1.1rem;
-      font-style: italic;
-      color: #333;
-    }
-    .intro {
       font-size: 1.3rem;
+      font-weight: 500;
+      color: #333;
+      font-style: italic;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+    }
+    /* 소개글 */
+    .intro {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #222;
       margin-bottom: 15px;
       line-height: 1.6;
     }
     .intro span {
       color: #FFD700;
       font-size: 1.4em;
-      font-weight: bold;
+      font-weight: 700;
     }
     /* About Button */
     .about-btn {
@@ -61,32 +62,33 @@
     .about-btn:hover {
       background-color: #ffcc00;
     }
-    /* Character */
+    /* 캐릭터 */
     .bot-character {
       display: block;
-      margin: 30px auto 0 auto; /* 위쪽 여백 늘림 */
-      height: 170px; /* 크기 확대 */
+      margin: 30px auto 0 auto;
+      height: 170px;
       width: auto;
     }
-    /* List */
+    /* 목록 */
     ul {
       list-style: none;
       padding-left: 0;
-      font-size: 1.15rem;
-      line-height: 1.8;
-      color: #1a1a1a;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: #222;
       margin: 20px 0 0;
       text-align: left;
       display: inline-block;
     }
     ul li::before { content: "🔸 "; }
-    /* Footer */
+    /* 푸터 */
     footer {
-      font-size: 1rem;
-      color: #222;
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #444;
       margin-top: 40px;
     }
-    /* X icon */
+    /* X 아이콘 */
     .x-icon {
       position: fixed;
       bottom: 20px;
@@ -112,40 +114,40 @@
 </head>
 <body>
   <div class="container">
-    <!-- Top Icons -->
+    <!-- 상단 아이콘 -->
     <div class="header-icons" style="display:flex;justify-content:center;align-items:center;gap:15px;">
       <img src="./assets/ChatG.png" alt="Tumo Bot Face" style="height:140px;width:auto;">
       <img src="./assets/512TMC.png" alt="Tumo Coin" style="height:140px;width:auto;">
     </div>
 
-    <!-- Title -->
+    <!-- 제목 -->
     <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
     <div class="subtitle">(AI-designed, User-owned — AI-Born)</div>
 
-    <!-- Intro -->
+    <!-- 소개글 -->
     <p class="intro">
       <span>TUMO</span> — Time Utility Machine Organizer:<br>
       An AI·Web3 ecosystem designed to save time and create real utility value.
     </p>
 
-    <!-- About Button -->
+    <!-- About 버튼 -->
     <a href="#about" class="about-btn">🌐 About TUMO</a>
 
-    <!-- Character -->
+    <!-- 캐릭터 -->
     <img src="./assets/tutu.png" alt="Tumo Bot" class="bot-character">
 
-    <!-- Info List -->
+    <!-- 정보 목록 -->
     <ul>
       <li>Website: <a href="https://tumoofc.github.io" style="color:#1a1a1a;">https://tumoofc.github.io</a></li>
       <li>Token Utility: Click2Earn, Governance, DAO</li>
       <li>Vision: To become a time-saving AI companion, not a replacement.</li>
     </ul>
 
-    <!-- Footer -->
+    <!-- 푸터 -->
     <footer>© 2025 TUMO Foundation. All rights reserved.</footer>
   </div>
 
-  <!-- X Icon -->
+  <!-- X 아이콘 -->
   <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon" title="Follow TUMO on X">
     <img src="./assets/x_icon.png?v=2" alt="X">
   </a>

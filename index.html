@@ -43,9 +43,45 @@
       color: #ddd;
       margin-top: 40px;
     }
+    /* 상단 로고 2개 스타일 */
+    .top-logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      padding: 10px 0;
+    }
+    .top-logos img {
+      height: 60px;
+    }
+    /* 우측 하단 X 아이콘 스타일 */
+    .x-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: #000;
+      border-radius: 50%;
+      padding: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .x-icon img {
+      width: 28px;
+      height: 28px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- 상단 중앙 로고 2개 -->
+  <div class="top-logos">
+    <img src="./assets/tumo_face.png?v=1" alt="TUMO Logo" />
+    <img src="./assets/tmc_coin.png?v=1" alt="TMC Coin" />
+  </div>
+
   <div class="container">
     <img src="logo.png" alt="TUMO Logo" class="logo" />
     <h1>Welcome to TUMO</h1>
@@ -60,5 +96,11 @@
 
     <footer>© 2025 TUMO Foundation. All rights reserved.</footer>
   </div>
+
+  <!-- 우측 하단 X 아이콘 -->
+  <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon">
+    <img src="./assets/x_icon.png?v=1" alt="X">
+  </a>
+
 </body>
 </html>

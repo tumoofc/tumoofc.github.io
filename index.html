@@ -5,56 +5,90 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to TUMO</title>
   <style>
+    :root{
+      --bg:#ffd54a;           /* 메인 노랑 */
+      --circuit:#b38f00;      /* 회로선 컬러 */
+      --text:#201a00;         /* 본문 텍스트(가독용 다크브라운) */
+      --white:#ffffff;
+    }
+    /* 노랑 배경 + 회로 패턴 + 라이트/다크 비네팅 */
     body {
       margin: 0;
-      background-color: #ff6a00;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: var(--white);
       text-align: center;
       padding: 30px;
+
+      /* 3겹 레이어: 라이트 비네팅 / 다크 비네팅 / SVG 회로타일  */
+      background:
+        radial-gradient(1200px 800px at 20% 0%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 60%),
+        radial-gradient(1200px 900px at 100% 100%, rgba(0,0,0,.14) 0%, rgba(0,0,0,0) 65%),
+        url("data:image/svg+xml;utf8, \
+<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'> \
+  <g fill='none' stroke='%23b38f00' stroke-width='2' stroke-opacity='.35'> \
+    <rect x='18' y='18' width='204' height='204' rx='12'/> \
+    <path d='M30 120h60v-40h40v40h40v60'/> \
+    <path d='M60 60h60M120 60v40M160 100h40'/> \
+    <circle cx='60' cy='60' r='5'/><circle cx='120' cy='100' r='5'/><circle cx='200' cy='100' r='5'/> \
+    <circle cx='170' cy='180' r='6'/> \
+  </g> \
+</svg>");
+      background-color: var(--bg);
+      background-size: cover, cover, 240px 240px; /* 회로는 타일 */
+      background-attachment: fixed, fixed, fixed;
     }
+
     .container {
-      max-width: 600px;
+      max-width: 720px;
       margin: auto;
+      backdrop-filter: saturate(120%);
     }
-    img.logo {
-      width: 150px;
-      margin-top: 20px;
-    }
+
+    /* 기존 포스터/로고 제거했으므로 제목부터 시작 */
     h1 {
-      font-size: 2.2em;
-      margin-top: 20px;
+      font-size: 2.4rem;
+      margin: 10px 0 14px;
+      letter-spacing: .3px;
+      text-shadow: 0 2px 10px rgba(0,0,0,.12);
     }
+    p.lead {
+      color: #2b2100;
+      font-weight: 600;
+      line-height: 1.55;
+      margin: 0 0 22px;
+      text-shadow: 0 1px 0 rgba(255,255,255,.25);
+    }
+
     h2 {
-      font-size: 1.6em;
-      margin-top: 40px;
+      font-size: 1.55rem;
+      margin-top: 36px;
+      color: var(--text);
+      background: rgba(255,255,255,.28);
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 10px;
     }
+
     ul {
       list-style: none;
       padding-left: 0;
-      font-size: 1.05em;
+      font-size: 1.06rem;
       line-height: 1.8;
+      color: #2b2100;
+      margin: 16px 0 0;
+      text-align: left;
+      display: inline-block;
     }
-    ul li::before {
-      content: "🔸 ";
-    }
+    ul li::before { content: "🔸 "; }
+
     footer {
-      font-size: 0.8em;
-      color: #ddd;
+      font-size: .85rem;
+      color: #3a2e00;
       margin-top: 40px;
+      text-shadow: 0 1px 0 rgba(255,255,255,.25);
     }
-    /* 상단 로고 2개 스타일 */
-    .top-logos {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 24px;
-      padding: 10px 0;
-    }
-    .top-logos img {
-      height: 60px;
-    }
-    /* 우측 하단 X 아이콘 스타일 */
+
+    /* 우측 하단 X 아이콘 고정 */
     .x-icon {
       position: fixed;
       bottom: 20px;
@@ -66,30 +100,31 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,.28);
+      transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease;
+      opacity: .95;
     }
-    .x-icon img {
-      width: 28px;
-      height: 28px;
+    .x-icon:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 12px 32px rgba(0,0,0,.35);
+      opacity: 1;
     }
+    .x-icon img { width: 28px; height: 28px; }
   </style>
 </head>
 <body>
 
-  <!-- 상단 중앙 로고 2개 -->
-  <div class="top-logos">
-    <img src="./assets/tumo_face.png?v=1" alt="TUMO Logo" />
-    <img src="./assets/tmc_coin.png?v=1" alt="TMC Coin" />
-  </div>
-
   <div class="container">
-    <img src="logo.png" alt="TUMO Logo" class="logo" />
+    <!-- 상단 로고 두 개, 포스터 이미지 제거되었습니다 -->
+
     <h1>Welcome to TUMO</h1>
-    <p>The Autonomous AI Companion Token —<br />Empowering the Future, Together.</p>
+    <p class="lead">
+      The Autonomous AI Companion Token — Empowering the Future, Together.
+    </p>
 
     <h2>🌐 About TUMO</h2>
     <ul>
-      <li>Website: <a href="https://tumoofc.github.io" style="color:white;">https://tumoofc.github.io</a></li>
+      <li>Website: <a href="https://tumoofc.github.io" style="color:#1b0;">https://tumoofc.github.io</a></li>
       <li>Token Utility: Click2Earn, Governance, DAO</li>
       <li>Vision: To become a time-saving AI companion, not a replacement.</li>
     </ul>
@@ -98,8 +133,8 @@
   </div>
 
   <!-- 우측 하단 X 아이콘 -->
-  <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon">
-    <img src="./assets/x_icon.png?v=1" alt="X">
+  <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon" title="Follow TUMO on X">
+    <img src="./assets/x_icon.png?v=2" alt="X">
   </a>
 
 </body>

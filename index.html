@@ -1,38 +1,68 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TUMO</title>
   <style>
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-         text-align:center;background:#111;color:#eee;padding:40px}
-    h1{font-size:2.2rem;margin:8px 0 4px}
-    p{opacity:.9}
-    .btn{display:inline-block;margin:8px;padding:12px 22px;border-radius:10px;font-weight:800;
-         text-decoration:none}
+    /* --------- Base --------- */
+    html,body{height:100%}
+    body{
+      margin:0; text-align:center;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:#111; padding:36px 20px;
+
+      /* 배경: 금색 회로 이미지가 있으면 사용, 없으면 컬러만 보이도록 */
+      background:#f7d75a url("./assets/Chat.png") no-repeat center top;
+      background-size:cover; background-attachment:fixed;
+    }
+    @media (max-width:768px){
+      body{background-attachment:scroll;background-size:cover}
+    }
+
+    .wrap{max-width:980px;margin:0 auto}
+    h1{font-size:2.4rem;line-height:1.2;margin:6px 0 10px;font-weight:900;
+       text-shadow:1px 1px 3px rgba(255,255,255,.6)}
+    .subtitle{margin:0 0 18px;opacity:.85;font-style:italic}
+    .lead{margin:0 0 18px}
+
+    /* --------- Buttons --------- */
+    .btn{
+      display:inline-block;padding:12px 22px;margin:8px;border-radius:10px;
+      font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.15)
+    }
     .btn-yellow{background:#ffd54f;color:#111}
     .btn-red{background:#e53935;color:#fff}
-    .wrap{max-width:900px;margin:0 auto}
+
+    /* --------- Footer --------- */
+    .bot{margin:22px auto 8px;width:120px}
+    footer{margin-top:26px;font-size:.9rem;opacity:.75}
+    footer a{color:#0645ad;text-decoration:none}
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
-    <p><em>(AI-designed, User-owned — AI-Born)</em></p>
+    <p class="subtitle">(AI-designed, User-owned — AI-Born)</p>
 
-    <p><b style="color:#ff7043">TUMO</b> — Time Utility Machine Organizer:<br>
-       An AI·Web3 ecosystem designed to save time and create real utility value.</p>
+    <p class="lead">
+      <b style="color:#ff6f3c">TUMO</b> — Time Utility Machine Organizer:<br />
+      An AI·Web3 ecosystem designed to save time and create real utility value.
+    </p>
 
     <p>
       <a href="#about" class="btn btn-yellow">🌐 About TUMO</a>
       <a href="/mine/mining.html" class="btn btn-red">⛏️ Start Mining</a>
     </p>
 
-    <footer style="margin-top:28px;opacity:.7;font-size:.9rem">
-      Website: <a href="https://tumoofc.github.io/">tumoofc.github.io</a><br>
-      Token Utility: Click2Earn, Governance, DAO<br>
-      © 2025 TUMO Foundation
+    <!-- 캐릭터: 리포에 tu111tu.png(=이전 tutu.png) 있으면 표시 -->
+    <img src="./assets/tu111tu.png" alt="Tumo Bot" class="bot" />
+
+    <footer>
+      Website: <a href="https://tumoofc.github.io/">tumoofc.github.io</a><br />
+      Token Utility: Click2Earn, Governance, DAO<br />
+      Vision: To become a time-saving AI companion, not a replacement.<br />
+      © 2025 TUMO Foundation. All rights reserved.
     </footer>
   </div>
 </body>

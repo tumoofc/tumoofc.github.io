@@ -6,34 +6,33 @@
   <title>TUMO</title>
   <style>
     :root{
-      --h1: clamp(22px, 4.2vw, 44px);
+      /* 타이포 & 레이아웃 스케일 */
+      --h1: clamp(24px, 4.4vw, 44px);
       --lead: clamp(13px, 1.6vw, 16px);
       --btn-py: clamp(10px, 1.2vw, 12px);
       --btn-px: clamp(16px, 2vw, 22px);
-      --icon: clamp(48px, 6vw, 72px);
-      --bot: clamp(120px, 20vw, 220px);
-      --card-font: clamp(13px, 1.5vw, 14px);
-      --card-pad: clamp(12px, 2vw, 16px);
+      --icon: clamp(44px, 6vw, 64px);
+      --bot: clamp(120px, 19vw, 220px);
       --wrap-w: min(94vw, 980px);
-      --section-gap: clamp(10px, 2vw, 16px);
+      --gap: clamp(10px, 2vw, 16px);
     }
 
     html,body{height:100%}
 
-    /* 🔆 배경을 더 밝게(스팟라이트 + 골드 그라데이션 + 원본 이미지) */
+    /* ⚡ 금빛 그라데이션 + 회로 배경 (원본 톤) */
     body{
       margin:0; text-align:center;
       font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
-      color:#111;
+      color:#121212;
       background:
         radial-gradient(circle at 50% 38%,
-          rgba(255,235,120,.90) 0%,
+          rgba(255,235,120,.92) 0%,
           rgba(255,223,80,.62) 32%,
           rgba(255,210,50,.40) 55%,
           rgba(255,200,20,.22) 72%,
           rgba(255,190, 0,.08) 86%,
           rgba(255,185, 0, 0) 100%),
-        linear-gradient(rgba(255,246,175,.55), rgba(255,230,120,.45)),
+        linear-gradient(rgba(255,246,175,.50), rgba(255,230,120,.42)),
         url("./assets/Chat.png") center top / cover no-repeat,
         #ffdf64;
       background-attachment: fixed, fixed, fixed, fixed;
@@ -45,9 +44,9 @@
 
     .wrap{ width:var(--wrap-w); margin:0 auto; }
 
-    /* 상단 아이콘(크기/정렬 통일) */
+    /* 상단 심볼 2개 */
     .symbols{
-      margin: 6px auto var(--section-gap);
+      margin: 4px auto var(--gap);
       display:flex; justify-content:center; align-items:center; gap: clamp(10px, 2vw, 18px);
       flex-wrap:wrap;
     }
@@ -58,23 +57,25 @@
 
     /* 타이틀/서브/리드 */
     h1{
-      font-size:var(--h1); line-height:1.18; margin:6px 0 8px; font-weight:900;
+      font-size:var(--h1); line-height:1.18; margin:6px 0 6px; font-weight:900;
       text-shadow:1px 1px 3px rgba(255,255,255,.65);
       padding: 0 6px;
     }
-    .subtitle{margin:0 0 10px; opacity:.9; font-style:italic; font-size: clamp(12px, 1.4vw, 15px)}
+    .subtitle{
+      margin:0 0 8px; opacity:.9; font-style:italic; font-size: clamp(12px, 1.4vw, 15px)
+    }
     .lead{
-      margin:0 auto var(--section-gap);
+      margin:0 auto var(--gap);
       max-width: 760px;
       font-size: var(--lead); line-height:1.55; padding:0 6px;
     }
     .lead .brand{color:#ff6f3c; font-weight:900; letter-spacing:.3px}
 
-    /* 버튼/링크 */
+    /* 액션 */
     .actions{
       display:flex; gap: clamp(8px, 2vw, 14px);
       justify-content:center; align-items:center; flex-wrap:wrap;
-      margin: var(--section-gap) 0 calc(var(--section-gap) + 2px);
+      margin: var(--gap) 0 calc(var(--gap) + 2px);
     }
     .btn{
       display:inline-block; padding: var(--btn-py) var(--btn-px);
@@ -84,50 +85,45 @@
     }
     .link{
       color:#1a1a1a; text-decoration:underline; font-weight:700;
-      font-size: clamp(13px, 1.7vw, 16px); opacity:.95;
-      white-space:nowrap;
+      font-size: clamp(13px, 1.7vw, 16px); opacity:.95; white-space:nowrap;
     }
 
-    /* 중앙 캐릭터 */
+    /* 중앙 봇(포스터 이미지 제거, 캐릭만) */
     .bot{
-      width:var(--bot); height:auto; margin: calc(var(--section-gap) + 6px) auto 12px; display:block;
+      width:var(--bot); height:auto; margin: calc(var(--gap) + 4px) auto 10px; display:block;
       filter: drop-shadow(0 8px 26px rgba(0,0,0,.28));
       max-width: 70vw;
     }
 
-    /* ✅ README 텍스트 카드 — 과하지 않게, 고급스럽게 */
-    .readme{
-      margin: clamp(10px, 2vw, 14px) auto 0;
-      width: min(92vw, 560px);                 /* 과한 네모칸 느낌 제거: 폭 줄임 */
-      background: rgba(255,255,255,.88);
-      color:#222;
-      border: 1px solid rgba(255,240,160,.9);  /* 얇은 골드 테두리 */
-      border-radius:14px;
-      padding: var(--card-pad);
-      box-shadow: 0 10px 24px rgba(168,116,0,.22);
-      font-size: var(--card-font); line-height:1.55;
-      text-align:left; white-space:pre-line;
-      backdrop-filter: saturate(130%) blur(2px);
+    /* 하단 정보 3줄(가운데 정렬, 불릿 없이) */
+    .info{
+      margin: 6px auto 0;
+      font-size: clamp(13px, 1.55vw, 15px);
+      line-height:1.7;
+      color:#1c1600;
     }
-    .readme .hdr{ font-weight:800; margin-bottom: 6px }
-    .readme ul{ padding-left: 18px; margin: 8px 0 0 }
-    .readme li{ margin: 4px 0 }
+    .info .row{margin:3px 0}
 
     /* 푸터 */
-    footer{ margin-top: clamp(14px, 2.5vw, 20px); font-size: clamp(12px, 1.5vw, 13px); opacity:.9; line-height:1.55 }
+    footer{
+      margin-top: clamp(14px, 2.5vw, 20px);
+      font-size: clamp(12px, 1.5vw, 13px);
+      opacity:.9; line-height:1.55;
+    }
     footer a{ color:#0645ad; text-decoration:none }
   </style>
 </head>
 <body>
   <div class="wrap">
 
-    <!-- 상단 아이콘 -->
+    <!-- 상단 심볼 -->
     <div class="symbols">
       <img src="./assets/512TMC.png" alt="TUMO Logo">
       <img src="./assets/ChatG.png"  alt="TUMO Symbol">
     </div>
 
-    <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
+    <!-- 헤드라인 -->
+    <h1>The AI-Born Web3 Ecosystem — Built for<br>Utility, Driven by Community.</h1>
     <p class="subtitle">(AI-designed, User-owned — AI-Born)</p>
 
     <p class="lead">
@@ -135,33 +131,25 @@
       An AI-Web3 ecosystem designed to save time and create real utility value.
     </p>
 
+    <!-- 액션 -->
     <div class="actions">
       <a href="#about" class="btn">🌐 About TUMO</a>
       <a href="/mine/mining.html" class="link">⛏ Start Mining</a>
     </div>
 
-    <!-- 중앙 캐릭터 -->
+    <!-- 캐릭터(포스터 대신 캐릭 단독 PNG/투명 추천) -->
     <img src="./assets/tutu.png" alt="Tumo Bot" class="bot" />
 
-    <!-- README 텍스트(링크 아님) -->
-    
-      <h1>🌐 Welcome to TUMO</h1>
-      TUMO is the Autonomous AI Companion Token —
-      Empowering the Future, Together.
-
-      <ul>
-        <li>Website: https://tumoofc.github.io</li>
-        <li>Token Utility: Click2Earn, Governance, DAO</li>
-        <li>Vision: To become a time-saving AI companion, not a replacement.</li>
-      </ul>
+    <!-- Welcome 섹션 (왼쪽 원본처럼 간결하게) -->
+    <h1 id="about">🌐 Welcome to TUMO</h1>
+    <div class="info">
+      <div class="row">Website: <a href="https://tumoofc.github.io">https://tumoofc.github.io</a></div>
+      <div class="row">Token Utility: Click2Earn, Governance, DAO</div>
+      <div class="row">Vision: To become a time-saving AI companion, not a replacement.</div>
     </div>
 
     <footer>
-      Website: <a href="https://tumoofc.github.io/">tumoofc.github.io</a><br>
-      Token Utility: Click2Earn, Governance, DAO<br>
-      Vision: To become a time-saving AI companion, not a replacement.<br>
-      Symbol & Logo © TUMO Foundation<br>
-      © 2025 TUMO Foundation. All rights reserved.
+      Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.
     </footer>
   </div>
 </body>

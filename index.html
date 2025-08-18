@@ -6,24 +6,21 @@
   <title>TUMO</title>
   <style>
     :root{
-      --h1: clamp(26px, 5vw, 52px);       /* ⬆️ 헤드라인 크게 */
+      --h1: clamp(26px, 5vw, 52px);
       --lead: clamp(14px, 1.7vw, 18px);
       --btn-py: clamp(11px, 1.3vw, 13px);
       --btn-px: clamp(18px, 2.2vw, 26px);
 
-      /* ⬆️ 심볼 더 크게 */
       --icon: clamp(96px, 12vw, 128px);
-      --symbols-bottom: clamp(34px, 6vw, 70px);
+      --symbols-bottom: clamp(46px, 7vw, 80px);   /* ⬆️ 심볼 간격 확장 */
 
       --bot: clamp(92px, 18vw, 200px);
       --wrap-w: min(94vw, 980px);
       --hero-w: min(90vw, 800px);
-      --gap: clamp(12px, 2vw, 20px);
     }
 
     html,body{height:100%}
 
-    /* 🌟 밝은 골드 배경 + 회로 더 선명하게 */
     body{
       margin:0; text-align:center;
       font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
@@ -38,20 +35,16 @@
           rgba(255,190,0,0) 100%),
         url("./assets/Chat.png") center top / cover no-repeat,
         #ffe680;
-      background-attachment: fixed, fixed, fixed;
+      background-attachment: fixed;
       padding: clamp(18px, 3vw, 30px) 12px;
-    }
-    @media (max-width:900px){
-      body{ background-attachment: scroll, scroll, scroll; }
     }
 
     .wrap{ width:var(--wrap-w); margin:0 auto; }
 
-    /* 상단 심볼 */
     .symbols{
-      margin: clamp(8px, 2vw, 14px) auto var(--symbols-bottom);
+      margin: clamp(10px, 2vw, 18px) auto var(--symbols-bottom);
       display:flex; justify-content:center; align-items:center;
-      gap: clamp(16px, 2.6vw, 24px);
+      gap: clamp(18px, 3vw, 26px);
       flex-wrap:wrap;
     }
     .symbols img{
@@ -59,7 +52,6 @@
       filter: drop-shadow(0 6px 18px rgba(0,0,0,.3));
     }
 
-    /* 히어로 */
     .hero{ width: var(--hero-w); margin: 0 auto; }
 
     h1{
@@ -69,9 +61,9 @@
       text-shadow:0 2px 8px rgba(255,255,255,.4);
     }
     .subtitle{
-      margin:0 auto clamp(14px, 2.6vw, 24px);
+      margin:0 auto clamp(16px, 3vw, 28px);
       opacity:.95; font-style:italic;
-      font-size: clamp(14px, 1.6vw, 17px);
+      font-size: clamp(15px, 1.8vw, 19px);  /* ⬆️ 부제 더 크게 */
     }
     .lead{
       margin:0 auto clamp(20px, 3vw, 34px);
@@ -80,11 +72,10 @@
     }
     .lead .brand{color:#ff6f3c; font-weight:900;}
 
-    /* 액션 */
     .actions{
       display:flex; gap: clamp(12px, 2.6vw, 20px);
       justify-content:center; align-items:center; flex-wrap:wrap;
-      margin: clamp(18px, 3vw, 32px) 0 clamp(16px, 3vw, 28px);
+      margin: clamp(20px, 3.4vw, 36px) 0 clamp(18px, 3vw, 30px);
     }
     .btn{
       display:inline-flex; align-items:center; gap:10px;
@@ -96,7 +87,6 @@
     .btn.ghost{
       background: rgba(255,255,255,.15);
       border:1px solid rgba(0,0,0,.15);
-      text-decoration:none;
     }
 
     .bot{
@@ -109,7 +99,7 @@
 
     .info{
       width: var(--hero-w);
-      margin: 10px auto 0;
+      margin: 12px auto 0;
       font-size: clamp(14px, 1.55vw, 15px);
       line-height:1.72; color:#1c1600;
     }
@@ -121,10 +111,8 @@
       margin: clamp(18px, 2.8vw, 30px) auto 0;
       font-size: clamp(12px, 1.5vw, 13px);
       opacity:.9;
-      line-height:1.6;
     }
 
-    /* X 아이콘 */
     .x-icon{
       position: fixed; bottom: 20px; right: 20px;
       z-index: 9999;
@@ -132,9 +120,7 @@
       padding:10px;
       display:inline-flex;align-items:center;justify-content:center;
       box-shadow:0 10px 24px rgba(0,0,0,.35);
-      transition:.15s ease;
     }
-    .x-icon:hover{ transform:scale(1.08); }
     .x-icon img{ width:28px; height:28px; }
   </style>
 </head>
@@ -163,10 +149,8 @@
       </div>
     </div>
 
-    <!-- 중앙 봇 -->
     <img src="./assets/tutu.png" alt="Tumo Bot" class="bot" />
 
-    <!-- About -->
     <h1 id="about">🌐 Welcome to TUMO</h1>
     <div class="info">
       <div class="row">Website: <a href="https://tumoofc.github.io">https://tumoofc.github.io</a></div>
@@ -179,7 +163,6 @@
     </footer>
   </div>
 
-  <!-- X 아이콘 -->
   <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon">
     <img src="./assets/x_icon.png" alt="X">
   </a>

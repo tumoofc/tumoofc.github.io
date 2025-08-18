@@ -1,1 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TUMO Web Mining</title>
 
+  <!-- 최소한의 인라인 스타일(외부 CSS 못 불러와도 화면이 보이게) -->
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#111;color:#eee;margin:0}
+    main{max-width:640px;margin:8vh auto;padding:24px;background:#1a1a1a;border-radius:12px}
+    h1{margin:0 0 12px}
+    .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:12px 0}
+    .btn{display:inline-block;padding:10px 16px;border-radius:8px;background:#ffd54f;color:#111;font-weight:700;text-decoration:none;border:0;cursor:pointer}
+    .tip{color:#aaa;font-size:14px}
+    #status{font-weight:700}
+  </style>
+
+  <!-- web3.js는 뒤에서 defer로 로드 (실패해도 화면은 떠야 함) -->
+</head>
+<body>
+  <main>
+    <h1>⛏️ TUMO Web Mining (MVP)</h1>
+    <div id="status">지갑 미연결</div>
+
+    <div class="row">
+      <button id="btnConnect" class="btn">지갑 연결</button>
+      <button id="btnStart" class="btn">Start</button>
+      <button id="btnStop"  class="btn">Stop</button>
+    </div>
+
+    <div class="row">
+      오늘 적립: <b id="earned">0</b> pts
+    </div>
+
+    <hr>
+    <div class="row">
+      <button id="btnClaim" class="btn">오늘분 수령</button>
+    </div>
+    <p class="tip">수령 트랜잭션의 가스는 <b>사용자 지갑</b>이 지불됩니다.</p>
+  </main>
+
+  <!-- 스크립트는 defer로 (렌더링 방해 X) -->
+  <script defer src="https://unpkg.com/@solana/web3.js@1.91.0/lib/index.iife.js"></script>
+  <script defer src="./app.js"></script>
+</body>
+</html>

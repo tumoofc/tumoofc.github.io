@@ -6,8 +6,7 @@
   <title>TUMO</title>
   <style>
     :root{
-      /* 폰~데스크톱까지 자연스러운 스케일 */
-      --h1: clamp(22px, 4.3vw, 44px);
+      --h1: clamp(22px, 4.2vw, 44px);
       --lead: clamp(13px, 1.6vw, 16px);
       --btn-py: clamp(10px, 1.2vw, 12px);
       --btn-px: clamp(16px, 2vw, 22px);
@@ -20,22 +19,33 @@
     }
 
     html,body{height:100%}
+
+    /* 🔆 배경을 더 밝게(스팟라이트 + 골드 그라데이션 + 원본 이미지) */
     body{
       margin:0; text-align:center;
       font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
       color:#111;
       background:
-        linear-gradient(rgba(255,240,180,.55), rgba(255,240,180,.55)),
-        url("./assets/Chat.png") no-repeat center top,
-        #ffe065;
-      background-size:cover; background-attachment:fixed;
+        radial-gradient(circle at 50% 38%,
+          rgba(255,235,120,.90) 0%,
+          rgba(255,223,80,.62) 32%,
+          rgba(255,210,50,.40) 55%,
+          rgba(255,200,20,.22) 72%,
+          rgba(255,190, 0,.08) 86%,
+          rgba(255,185, 0, 0) 100%),
+        linear-gradient(rgba(255,246,175,.55), rgba(255,230,120,.45)),
+        url("./assets/Chat.png") center top / cover no-repeat,
+        #ffdf64;
+      background-attachment: fixed, fixed, fixed, fixed;
       padding: clamp(16px, 3vw, 28px) 12px;
     }
-    @media (max-width:900px){ body{ background-attachment:scroll } }
+    @media (max-width:900px){
+      body{ background-attachment: scroll, scroll, scroll, scroll; }
+    }
 
     .wrap{ width:var(--wrap-w); margin:0 auto; }
 
-    /* 상단 아이콘 */
+    /* 상단 아이콘(크기/정렬 통일) */
     .symbols{
       margin: 6px auto var(--section-gap);
       display:flex; justify-content:center; align-items:center; gap: clamp(10px, 2vw, 18px);
@@ -85,15 +95,19 @@
       max-width: 70vw;
     }
 
-    /* README 텍스트 카드 */
+    /* ✅ README 텍스트 카드 — 과하지 않게, 고급스럽게 */
     .readme{
-      margin: clamp(8px, 2vw, 12px) auto 0;
-      width: min(92vw, 720px);
-      background: rgba(255,255,255,.9); color:#222;
-      border-radius:12px; padding: var(--card-pad);
-      box-shadow: 0 10px 28px rgba(0,0,0,.16);
+      margin: clamp(10px, 2vw, 14px) auto 0;
+      width: min(92vw, 560px);                 /* 과한 네모칸 느낌 제거: 폭 줄임 */
+      background: rgba(255,255,255,.88);
+      color:#222;
+      border: 1px solid rgba(255,240,160,.9);  /* 얇은 골드 테두리 */
+      border-radius:14px;
+      padding: var(--card-pad);
+      box-shadow: 0 10px 24px rgba(168,116,0,.22);
       font-size: var(--card-font); line-height:1.55;
       text-align:left; white-space:pre-line;
+      backdrop-filter: saturate(130%) blur(2px);
     }
     .readme .hdr{ font-weight:800; margin-bottom: 6px }
     .readme ul{ padding-left: 18px; margin: 8px 0 0 }
@@ -107,7 +121,7 @@
 <body>
   <div class="wrap">
 
-    <!-- 상단 아이콘 (크기/간격 통일) -->
+    <!-- 상단 아이콘 -->
     <div class="symbols">
       <img src="./assets/512TMC.png" alt="TUMO Logo">
       <img src="./assets/ChatG.png"  alt="TUMO Symbol">
@@ -126,12 +140,12 @@
       <a href="/mine/mining.html" class="link">⛏ Start Mining</a>
     </div>
 
-    <!-- 중앙 캐릭터 (반응형) -->
+    <!-- 중앙 캐릭터 -->
     <img src="./assets/tutu.png" alt="Tumo Bot" class="bot" />
 
-    <!-- README 텍스트 카드 (링크 없음) -->
-    <div class="readme">
-      <div class="hdr">🌐 Welcome to TUMO</div>
+    <!-- README 텍스트(링크 아님) -->
+    
+      <h1>🌐 Welcome to TUMO</h1>
       TUMO is the Autonomous AI Companion Token —
       Empowering the Future, Together.
 

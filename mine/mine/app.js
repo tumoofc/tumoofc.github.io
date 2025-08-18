@@ -1,4 +1,4 @@
-/* ====================== i18n ====================== */
+/* ===== i18n ===== */
 const I18N = {
   en: {
     title: "TUMO Web Mining (MVP)",
@@ -46,25 +46,28 @@ let CUR_LANG = detectLang();
 
 function applyI18n() {
   const dict = I18N[CUR_LANG] || I18N.en;
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
+  document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     if (dict[key]) el.textContent = dict[key];
   });
   document.title = dict.title;
+
   const enBtn = document.getElementById("lang-en");
   const koBtn = document.getElementById("lang-ko");
   if (enBtn && koBtn) {
-    enBtn.classList.toggle("active", CUR_LANG==="en");
-    koBtn.classList.toggle("active", CUR_LANG==="ko");
+    enBtn.classList.toggle("active", CUR_LANG === "en");
+    koBtn.classList.toggle("active", CUR_LANG === "ko");
   }
 }
-function setLang(lang){
-  CUR_LANG = (lang==="ko" ? "ko" : "en");
+
+function setLang(lang) {
+  CUR_LANG = (lang === "ko" ? "ko" : "en");
   localStorage.setItem("tumo_lang", CUR_LANG);
   applyI18n();
 }
-window.setLang = setLang;   // 전역 노출
-/* ================================================== */
+
+// ✅ 전역 노출 (mining.html의 onclick이 이걸 직접 호출)
+window.setLang = setLang;
 
 /* ===== Core mining logic ===== */
 const SOL = solanaWeb3;
@@ -76,7 +79,7 @@ let walletPubkey = null;
 let ticking = false;
 let earned = 0;
 
-const $ = (q)=>document.querySelector(q);
+const $ = (q) => document.querySelector(q);
 
 async function connect() {
   if (!window.solana || !window.solana.isPhantom) {
@@ -94,7 +97,7 @@ async function connect() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pk: walletPubkey, sig: Array.from(signed.signature), nonce })
-  }).then(r=>r.ok);
+  }).then(r => r.ok);
 
   if (!ok) {
     alert(I18N[CUR_LANG].login_fail);
@@ -111,9 +114,9 @@ async function start() {
   ticking = true;
   loop();
 }
-function stop(){ ticking = false; }
+function stop() { ticking = false; }
 
-async function loop(){
+async function loop() {
   if (!ticking) return;
   try {
     await fetch(API_BASE + "/mine/tick", {
@@ -123,13 +126,13 @@ async function loop(){
     });
     earned += 1;
     $("#earned").textContent = earned;
-  } catch(e) { console.error(e); }
+  } catch (e) { console.error(e); }
   setTimeout(loop, 1000);
 }
 
-async function claimToday(){
+async function claimToday() {
   if (!walletPubkey) return alert(I18N[CUR_LANG].need_wallet);
-  const day = new Date().toISOString().slice(0,10);
+  const day = new Date().toISOString().slice(0, 10);
   const res = await fetch(API_BASE + "/claim/prepare", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -152,12 +155,27 @@ async function claimToday(){
   alert(I18N[CUR_LANG].claim_done + signature);
 }
 
-/* ===== Init ===== */
+/* ===== Init + 안전장치 ===== */
 document.addEventListener("DOMContentLoaded", () => {
+  // (1) 번역 적용
   applyI18n();
-  $("#btnConnect").onclick = connect;
-  $("#btnStart").onclick = start;
-  $("#btnStop").onclick = stop;
-  $("#btnClaim").onclick = claimToday;
   $("#status").textContent = I18N[CUR_LANG].status_disconnected;
+
+  // (2) 버튼 핸들러
+  const enBtn = document.getElementById("lang-en");
+  const koBtn = document.getElementById("lang-ko");
+  // mining.html에서 onclick을 이미 달았지만, 혹시 몰라 이벤트도 추가
+  if (enBtn) enBtn.addEventListener("click", () => setLang("en"));
+  if (koBtn) koBtn.addEventListener("click", () => setLang("ko"));
+
+  $("#btnConnect")?.addEventListener("click", connect);
+  $("#btnStart")?.addEventListener("click", start);
+  $("#btnStop")?.addEventListener("click", stop);
+  $("#btnClaim")?.addEventListener("click", claimToday);
+
+  // (3) 자가진단 로그
+  console.log("[TUMO] app.js loaded. setLang =", typeof window.setLang, "CUR_LANG =", CUR_LANG);
+  if (API_BASE.includes("YOUR-WORKER")) {
+    console.warn("[TUMO] API_BASE not set! Replace with your Cloudflare Worker URL.");
+  }
 });

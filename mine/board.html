@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TUMO – Leaderboard</title>
+<style>
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#fff;text-align:center;min-height:100dvh;padding:26px 12px;background:linear-gradient(160deg,#5a1010,#8c1414 45%,#b51616 85%);}
+  .wrap{max-width:920px;margin:0 auto}
+  h1{margin:12px 0 16px}
+  table{width:100%;border-collapse:collapse;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);border-radius:12px;overflow:hidden}
+  th,td{padding:12px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
+  th{background:rgba(255,255,255,.08)}
+  tr:last-child td{border-bottom:none}
+  a{color:#ffd}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Leaderboard</h1>
+  <p><a href="/mine/mining.html">← Back to Mining</a></p>
+  <table id="board">
+    <thead><tr><th>#</th><th>Wallet</th><th>Total</th><th>Last Update</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+<script>
+const API_URL = "https://YOUR_API_DOMAIN.example.com/tumo/leaderboard"; // TODO
+
+function short(a){return a? (a.slice(0,4)+"…"+a.slice(-4)):"-";}
+async function load(){
+  try{
+    if (!API_URL.startsWith("http")){
+      // 데모 데이터
+      const demo=[{rank:1, wallet:"FooooBarBaz1111", total:123.456, ts:Date.now()},
+                  {rank:2, wallet:"ABCDEFGH22222", total:91.2, ts:Date.now()}];
+      render(demo); return;
+    }
+    const r=await fetch(API_URL, {headers:{"accept":"application/json"}});
+    const j=await r.json();
+    render(j.data||[]);
+  }catch(e){
+    render([]);
+  }
+}
+function render(rows){
+  const tb=document.querySelector("#board tbody");
+  tb.innerHTML = rows.map(r=>(
+    `<tr>
+      <td>${r.rank||"-"}</td>
+      <td>${short(r.wallet)}</td>
+      <td>${Number(r.total||0).toFixed(3)}</td>
+      <td>${r.ts ? new Date(r.ts).toLocaleString():"-"}</td>
+    </tr>`
+  )).join("");
+}
+load();
+</script>
+</body>
+</html>

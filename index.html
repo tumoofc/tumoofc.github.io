@@ -1,182 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to TUMO</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TUMO Web Mining</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      text-align: center;
-      padding: 30px;
-      background: url('./assets/Chat.png') no-repeat center center fixed;
-      background-size: cover;
-      background-attachment: fixed;
-    }
-
-    @media (max-width: 768px) {
-      body {
-        background-attachment: scroll; /* 모바일에서는 스크롤 */
-        background-size: cover;       /* 화면에 맞춰 채우기 */
-      }
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-
-    /* 제목 */
-    h1 {
-      font-size: 2.4rem;
-      font-weight: 800;
-      color: #1a1a1a;
-      text-shadow: 1px 1px 3px rgba(255,255,255,0.6);
-      margin-bottom: 10px;
-    }
-
-    /* 부제 */
-    .subtitle {
-      font-size: 1.3rem;
-      font-weight: 500;
-      color: #333;
-      font-style: italic;
-      text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
-    }
-
-    /* 소개글 */
-    .intro {
-      font-size: 1.15rem;
-      font-weight: 500;
-      color: #222;
-      margin-bottom: 15px;
-      line-height: 1.6;
-    }
-    .intro span {
-      color: #ff8c00;
-      font-size: 1.4em;
-      font-weight: 800;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-    }
-
-    /* About Button */
-    .about-btn {
-      display: inline-block;
-      padding: 14px 26px;
-      background-color: #FFD700;
-      color: #000;
-      font-weight: bold;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 1.2em;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      margin: 18px 0 25px 0;
-    }
-    .about-btn:hover {
-      background-color: #ffcc00;
-    }
-
-    /* 캐릭터 */
-    .bot-character {
-      display: block;
-      margin: 30px auto 0 auto;
-      height: 170px;
-      width: auto;
-    }
-
-    /* 목록 */
-    ul {
-      list-style: none;
-      padding-left: 0;
-      font-size: 1.05rem;
-      font-weight: 400;
-      color: #222;
-      margin: 20px 0 0;
-      text-align: left;
-      display: inline-block;
-    }
-    ul li::before { content: "🔸 "; }
-
-    /* 푸터 */
-    footer {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #444;
-      margin-top: 40px;
-    }
-
-    /* X 아이콘 */
-    .x-icon {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
-      background: #000;
-      border-radius: 50%;
-      padding: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-      transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease;
-      opacity: .95;
-    }
-    .x-icon:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-      opacity: 1;
-    }
-    .x-icon img { width: 28px; height: 28px; }
+    body { font-family: system-ui; text-align: center; padding: 50px; }
+    button { padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 10px; }
+    #status { margin-top: 20px; font-size: 16px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- 상단 아이콘 -->
-    <div class="header-icons" style="display:flex;justify-content:center;align-items:center;gap:15px;">
-      <img src="./assets/ChatG.png" alt="Tumo Bot Face" style="height:140px;width:auto;">
-      <img src="./assets/512TMC.png" alt="Tumo Coin" style="height:140px;width:auto;">
-    </div>
+  <h1>⛏️ TUMO Web Mining</h1>
+  <p>웹에서 참여 버튼을 누르고 직접 채굴 보상을 클레임하세요.</p>
+  <button onclick="mine()">채굴하기</button>
+  <div id="status">지갑을 연결하세요.</div>
 
-    <!-- 제목 -->
-    <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
-    <div class="subtitle">(AI-designed, User-owned — AI-Born)</div>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+  <script>
+    let wallet = null;
+    async function connectWallet() {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const resp = await window.solana.connect();
+          wallet = resp.publicKey.toString();
+          document.getElementById("status").innerText = "연결됨: " + wallet;
+        } catch (err) {
+          document.getElementById("status").innerText = "지갑 연결 실패";
+        }
+      } else {
+        document.getElementById("status").innerText = "Phantom 지갑을 설치하세요.";
+      }
+    }
 
-    <!-- 소개글 -->
-    <p class="intro">
-      <span>TUMO</span> — Time Utility Machine Organizer:<br>
-      An AI·Web3 ecosystem designed to save time and create real utility value.
-    </p>
+    async function mine() {
+      if (!wallet) {
+        await connectWallet();
+        return;
+      }
+      document.getElementById("status").innerText = "⛏️ 채굴 포인트 기록 중...";
+      // TODO: 서버리스 API로 기록 전송 (Cloudflare/Supabase)
+      setTimeout(() => {
+        document.getElementById("status").innerText = "✅ 채굴 포인트가 기록되었습니다.";
+      }, 1000);
+    }
+  </script>
 
-<div style="margin-top:20px; text-align:center;">
-  <a href="#about" class="btn" style="margin-right:20px; font-size:20px; padding:14px 28px;">
-    🌐 About TUMO
-  </a>
-  <a href="/mine/index.html" 
-     style="display:inline-block; font-size:20px; padding:14px 28px;
-            background:#e53935; color:#fff; font-weight:700; border-radius:8px;
-            text-decoration:none;">
-    ⛏️ Start Mining
-  </a>
-</div>
-
-    <!-- 캐릭터 -->
-    <img src="./assets/tutu.png" alt="Tumo Bot" class="bot-character">
-
-    <!-- 정보 목록 -->
-    <ul>
-      <li>Website: <a href="https://tumoofc.github.io" style="color:#1a1a1a;">https://tumoofc.github.io</a></li>
-      <li>Token Utility: Click2Earn, Governance, DAO</li>
-      <li>Vision: To become a time-saving AI companion, not a replacement.</li>
-    </ul>
-
-    <!-- 푸터 -->
-    <footer>© 2025 TUMO Foundation. All rights reserved.</footer>
-  </div>
-
-  <!-- X 아이콘 -->
-  <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon" title="Follow TUMO on X">
-    <img src="./assets/x_icon.png?v=2" alt="X">
-  </a>
+  <br><br>
+  <button onclick="connectWallet()">지갑 연결</button>
 </body>
 </html>

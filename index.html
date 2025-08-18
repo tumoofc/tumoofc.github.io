@@ -3,50 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TUMO Web Mining</title>
+  <title>TUMO</title>
   <style>
-    body { font-family: system-ui; text-align: center; padding: 50px; }
-    button { padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 10px; }
-    #status { margin-top: 20px; font-size: 16px; }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+         text-align:center;background:#111;color:#eee;padding:40px}
+    h1{font-size:2.2rem;margin:8px 0 4px}
+    p{opacity:.9}
+    .btn{display:inline-block;margin:8px;padding:12px 22px;border-radius:10px;font-weight:800;
+         text-decoration:none}
+    .btn-yellow{background:#ffd54f;color:#111}
+    .btn-red{background:#e53935;color:#fff}
+    .wrap{max-width:900px;margin:0 auto}
   </style>
 </head>
 <body>
-  <h1>⛏️ TUMO Web Mining</h1>
-  <p>웹에서 참여 버튼을 누르고 직접 채굴 보상을 클레임하세요.</p>
-  <button onclick="mine()">채굴하기</button>
-  <div id="status">지갑을 연결하세요.</div>
+  <div class="wrap">
+    <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
+    <p><em>(AI-designed, User-owned — AI-Born)</em></p>
 
-  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-  <script>
-    let wallet = null;
-    async function connectWallet() {
-      if (window.solana && window.solana.isPhantom) {
-        try {
-          const resp = await window.solana.connect();
-          wallet = resp.publicKey.toString();
-          document.getElementById("status").innerText = "연결됨: " + wallet;
-        } catch (err) {
-          document.getElementById("status").innerText = "지갑 연결 실패";
-        }
-      } else {
-        document.getElementById("status").innerText = "Phantom 지갑을 설치하세요.";
-      }
-    }
+    <p><b style="color:#ff7043">TUMO</b> — Time Utility Machine Organizer:<br>
+       An AI·Web3 ecosystem designed to save time and create real utility value.</p>
 
-    async function mine() {
-      if (!wallet) {
-        await connectWallet();
-        return;
-      }
-      document.getElementById("status").innerText = "⛏️ 채굴 포인트 기록 중...";
-      // TODO: 서버리스 API로 기록 전송 (Cloudflare/Supabase)
-      setTimeout(() => {
-        document.getElementById("status").innerText = "✅ 채굴 포인트가 기록되었습니다.";
-      }, 1000);
-    }
-  </script>
+    <p>
+      <a href="#about" class="btn btn-yellow">🌐 About TUMO</a>
+      <a href="/mine/mining.html" class="btn btn-red">⛏️ Start Mining</a>
+    </p>
 
-  <br><br>
-  <button onclick="connectWallet()">지갑 연결</button>
+    <footer style="margin-top:28px;opacity:.7;font-size:.9rem">
+      Website: <a href="https://tumoofc.github.io/">tumoofc.github.io</a><br>
+      Token Utility: Click2Earn, Governance, DAO<br>
+      © 2025 TUMO Foundation
+    </footer>
+  </div>
 </body>
 </html>

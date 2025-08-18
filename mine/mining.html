@@ -3,97 +3,366 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TUMO – Claim</title>
+<title>TUMO – Mining</title>
+<link rel="preconnect" href="https://unpkg.com">
 <script src="https://unpkg.com/@solana/web3.js@1.91.6/lib/index.iife.min.js"></script>
 <script src="https://unpkg.com/bs58@5.0.0/dist/bs58.min.js"></script>
 <style>
-  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#fff;text-align:center;min-height:100dvh;padding:26px 12px;background:linear-gradient(160deg,#5a1010,#8c1414 45%,#b51616 85%);}
-  .wrap{max-width:720px;margin:0 auto}
-  h1{margin:12px 0 6px}
-  .card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:16px;margin-top:14px}
-  .btn{display:inline-block;padding:12px 18px;border-radius:14px;text-decoration:none;cursor:pointer;font-weight:800;color:#111;background:linear-gradient(#ffd633,#f4b030);border:1px solid rgba(255,220,120,.8)}
-  .muted{opacity:.85;margin-top:12px;font-size:13px}
-  a{color:#ffd}
+  :root{
+    --card-w: min(860px, 92vw);
+    --gold-1:#ffd54f; --gold-2:#ffbf2b;
+  }
+  body{
+    margin:0; color:#fff; font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; text-align:center;
+    min-height:100dvh; padding:24px 12px;
+    background: radial-gradient(1200px 500px at 50% -10%, rgba(255,230,160,.35), transparent 60%),
+               linear-gradient(170deg, #5a1010, #8d1414 46%, #b51616 85%);
+  }
+  .wrap{max-width:var(--card-w); margin:0 auto}
+  h1{font-size:clamp(28px, 5vw, 44px); margin:18px 0 6px}
+  p.lead{opacity:.9; margin:6px 0 18px}
+  .row{
+    display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:14px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:14px; cursor:pointer; user-select:none;
+    font-weight:800; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#fff;
+    box-shadow:0 8px 24px rgba(0,0,0,.22);
+  }
+  .btn.gold{
+    background: linear-gradient(var(--gold-1), var(--gold-2));
+    border:1px solid rgba(255,220,120,.85); color:#111;
+  }
+  .btn:disabled{opacity:.5; cursor:not-allowed}
+  .pill{padding:10px 14px; border-radius:12px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2)}
+  .card{
+    width:var(--card-w); margin:14px auto; text-align:left;
+    background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.15); border-radius:16px;
+    box-shadow:0 10px 26px rgba(0,0,0,.35); overflow:hidden;
+  }
+  .card .hd{
+    padding:12px 16px; font-weight:900; background:rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.12)
+  }
+  .card .bd{padding:16px}
+  .grid{display:grid; grid-template-columns: 1fr auto; gap:8px 16px; align-items:center}
+  .label{opacity:.9}
+  .val{font-weight:900}
+  .bar{height:10px; background:rgba(255,255,255,.13); border-radius:8px; overflow:hidden}
+  .bar > i{display:block; height:100%; width:0%; background:linear-gradient(#ff944d, #ff5d2e)}
+  .muted{opacity:.8; font-size:13px}
+  footer{opacity:.85; margin-top:18px; font-size:13px}
+  a.link{color:#ffd}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Claim Rewards</h1>
-  <p class="muted">서버에 적립 확정(클레임) 요청을 보냅니다. 지갑 서명으로 검증됩니다.</p>
+  <h1>Start Mining</h1>
+  <p class="lead">Lightweight in-browser simulation. Signed updates can be verified by the server (no real crypto mining).</p>
 
-  <div class="card">
-    <p>세션 포인트: <b id="points">0</b></p>
-    <p>클레임 가능분: <b id="claimable">0</b></p>
-    <button id="claimBtn" class="btn">✅ Claim Now</button>
-    <p id="msg" class="muted"></p>
+  <div class="row">
+    <span id="walletPill" class="pill">Wallet: Disconnected</span>
+    <button id="connectBtn" class="btn gold">🔗 Connect Phantom</button>
+    <button id="disconnectBtn" class="btn">⏏ Disconnect</button>
+
+    <a class="btn" href="/mine/board.html">🏆 Leaderboard</a>
+    <a class="btn" href="/">🏠 Back</a>
   </div>
 
-  <p class="muted"><a href="/mine/mining.html">← Back to Mining</a></p>
+  <div class="card">
+    <div class="hd">Session</div>
+    <div class="bd">
+      <div class="grid">
+        <div class="label">Status</div>
+        <div class="val" id="statusVal">Paused</div>
+
+        <div class="label">Points</div>
+        <div class="val"><span id="pointsVal">0.000</span></div>
+
+        <div class="label">Claimed</div>
+        <div class="val"><span id="claimedVal">0.000</span></div>
+
+        <div class="label">Hashrate (sim.)</div>
+        <div class="val"><span id="hashVal">0 H/s</span></div>
+      </div>
+
+      <div class="bar" style="margin:14px 0 10px">
+        <i id="hashBar"></i>
+      </div>
+
+      <div class="row">
+        <button id="startBtn" class="btn gold">▶ Start</button>
+        <button id="stopBtn" class="btn">⏸ Stop</button>
+        <button id="resetBtn" class="btn">↺ Reset</button>
+        <button id="claimBtn" class="btn gold">✅ Claim Now</button>
+      </div>
+
+      <p class="muted" id="msg">—</p>
+    </div>
+  </div>
+
+  <footer>Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.</footer>
 </div>
 
 <script>
-const API_URL = "https://YOUR_API_DOMAIN.example.com/tumo/claim"; // TODO
-let provider = null;
+/** =========================
+ *  CONFIG
+ *  ========================= */
+const API_BASE   = "https://YOUR_API_DOMAIN.example.com/tumo"; // ← 서버 쓰면 이걸로 교체
+const API_MINING = API_BASE + "/mining";
+const API_CLAIM  = API_BASE + "/claim";
 
+const SAVE_KEY_POINTS  = "tumo_points";
+const SAVE_KEY_CLAIMED = "tumo_claimed";
+const SAVE_KEY_SESSION = "tumo_session";
+
+/** =========================
+ *  STATE
+ *  ========================= */
+let provider = null;
+let wallet  = null; // base58
+let mining  = false;
+let points  = Number(localStorage.getItem(SAVE_KEY_POINTS)  || "0");
+let claimed = Number(localStorage.getItem(SAVE_KEY_CLAIMED) || "0");
+let sessionId = localStorage.getItem(SAVE_KEY_SESSION) || crypto.randomUUID();
+
+localStorage.setItem(SAVE_KEY_SESSION, sessionId);
+
+/** =========================
+ *  UI
+ *  ========================= */
+const $ = s => document.querySelector(s);
+const els = {
+  walletPill: $("#walletPill"),
+  statusVal:  $("#statusVal"),
+  pointsVal:  $("#pointsVal"),
+  claimedVal: $("#claimedVal"),
+  hashVal:    $("#hashVal"),
+  hashBar:    $("#hashBar"),
+  msg:        $("#msg"),
+  connect:    $("#connectBtn"),
+  disconnect: $("#disconnectBtn"),
+  start:      $("#startBtn"),
+  stop:       $("#stopBtn"),
+  reset:      $("#resetBtn"),
+  claim:      $("#claimBtn"),
+};
+
+function fmt(n){ return Number(n||0).toFixed(3); }
+function setMsg(t){ els.msg.textContent = t; }
+function refreshUI(){
+  els.pointsVal.textContent  = fmt(points);
+  els.claimedVal.textContent = fmt(claimed);
+  els.statusVal.textContent  = mining ? "Running" : "Paused";
+}
+
+/** =========================
+ *  PHANTOM
+ *  ========================= */
 function getProvider(){
   if ("solana" in window && window.solana?.isPhantom) return window.solana;
   return null;
 }
 
-const points = Number(localStorage.getItem('tumo_points')||"0");
-const lastClaimed = Number(localStorage.getItem('tumo_claimed')||"0");
-const claimable = Math.max(0, points - lastClaimed);
+async function connectWallet(){
+  try{
+    provider = getProvider();
+    if (!provider){ setMsg("Phantom wallet not found."); return; }
+    const { publicKey } = await provider.connect({ onlyIfTrusted:false });
+    wallet = publicKey.toBase58();
+    els.walletPill.textContent = "Wallet: " + wallet.slice(0,4) + "…" + wallet.slice(-4);
+    setMsg("Wallet connected.");
+  }catch(e){ setMsg("Connect failed: " + e.message); }
+}
 
-document.getElementById('points').textContent = points.toFixed(3);
-document.getElementById('claimable').textContent = claimable.toFixed(3);
+async function disconnectWallet(){
+  try{
+    if (provider?.disconnect) await provider.disconnect();
+  }catch(e){}
+  wallet = null;
+  els.walletPill.textContent = "Wallet: Disconnected";
+  setMsg("Disconnected.");
+}
 
-async function claim(){
-  const msgEl = document.getElementById('msg');
-  if (claimable <= 0){ msgEl.textContent="클레임 할 포인트가 없습니다."; return; }
+/** =========================
+ *  MINING TIMER
+ *  ========================= */
+let tickHandle = null;
+let hashHandle = null;
+let accSinceLastSend = 0;        // 서버로 전송할 누적 증가량
+const SEND_INTERVAL_MS = 30_000; // 30초마다 기록
 
-  provider = getProvider();
-  if (!provider){ msgEl.textContent="Phantom 지갑이 필요합니다."; return; }
+function startMining(){
+  if (mining) return;
+  mining = true;
+  refreshUI();
+  setMsg("Started.");
 
+  // 매 0.5초 포인트 증가(시뮬)
+  tickHandle = setInterval(()=>{
+    const delta = 0.005 + Math.random()*0.015; // 0.005~0.020
+    points += delta;
+    accSinceLastSend += delta;
+    localStorage.setItem(SAVE_KEY_POINTS, String(points));
+    refreshUI();
+  }, 500);
+
+  // 해시레이트 애니메이션
+  hashHandle = setInterval(()=>{
+    const h = 80 + Math.floor(Math.random()*120);
+    els.hashVal.textContent = h + " H/s";
+    els.hashBar.style.width = Math.min(100, h/2) + "%";
+  }, 900);
+
+  // 주기적 서버 전송
+  scheduleSend();
+}
+
+function stopMining(){
+  mining = false;
+  clearInterval(tickHandle); tickHandle = null;
+  clearInterval(hashHandle); hashHandle = null;
+  refreshUI();
+  setMsg("Stopped.");
+  sendUpdate().catch(()=>{});
+}
+
+function resetMining(){
+  mining = false;
+  clearInterval(tickHandle); tickHandle = null;
+  clearInterval(hashHandle); hashHandle = null;
+
+  points = 0;
+  accSinceLastSend = 0;
+  localStorage.setItem(SAVE_KEY_POINTS, "0");
+  refreshUI();
+  setMsg("Reset.");
+  sendUpdate(true).catch(()=>{});
+}
+
+let sendTimer = null;
+function scheduleSend(){
+  clearTimeout(sendTimer);
+  sendTimer = setTimeout(()=>sendUpdate().then(scheduleSend), SEND_INTERVAL_MS);
+}
+
+/** =========================
+ *  SIGN & SEND
+ *  ========================= */
+async function signMessageObj(obj){
+  // 메시지 텍스트: 고정 포맷
+  const message =
+    `TUMO-UPDATE|${obj.ts}|${obj.sessionId}|${obj.signer}|`+
+    `${obj.totalPoints.toFixed(6)}|${obj.deltaPoints.toFixed(6)}`;
+  const bytes = new TextEncoder().encode(message);
+  // 지갑 없으면 서명 없이(DRY RUN)
+  if (!provider || !wallet) return { message, signature:null, signer:null };
+  const sig = await provider.signMessage(bytes, "utf8");
+  return {
+    message,
+    signature: bs58.default.encode(sig.signature),
+    signer: provider.publicKey.toBase58()
+  };
+}
+
+async function sendUpdate(reset=false){
+  // 서버 기록을 사용하지 않으면 DRY RUN
+  if (!API_BASE.startsWith("http")){
+    setMsg("[DRY RUN] API_BASE 미설정 – 로컬 저장만 합니다.");
+    accSinceLastSend = 0;
+    return;
+  }
+  // 증가량 없고 reset 아님 → 스킵
+  const delta = reset ? 0 : accSinceLastSend;
+  if (delta <= 0 && !reset) return;
+
+  const ts = Date.now();
+  const payload = {
+    chain:       "solana",
+    ts, sessionId,
+    signer: wallet || "anonymous",
+    totalPoints: points,
+    deltaPoints: reset ? 0 : delta
+  };
+  const signed = await signMessageObj(payload);
+  const body = { ...payload, ...signed };
+
+  try{
+    const r = await fetch(API_MINING, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if (j.ok){
+      setMsg("Synced " + (reset?"(reset)":"") + " ✓");
+      accSinceLastSend = 0;
+    }else{
+      setMsg("Server error: " + (j.error||""));
+    }
+  }catch(e){
+    setMsg("Send failed: " + e.message);
+  }
+}
+
+/** =========================
+ *  CLAIM
+ *  ========================= */
+async function doClaim(){
+  const claimable = Math.max(0, points - claimed);
+  if (claimable <= 0){ setMsg("클레임 가능 포인트가 없습니다."); return; }
+
+  if (!API_BASE.startsWith("http")){
+    setMsg("[DRY RUN] Claim – API_BASE 없음.");
+    localStorage.setItem(SAVE_KEY_CLAIMED, String(points));
+    claimed = points;
+    refreshUI();
+    return;
+  }
+  if (!provider){ provider = getProvider(); }
+  if (!provider){ setMsg("Phantom wallet not found."); return; }
   try{
     const { publicKey } = await provider.connect({onlyIfTrusted:false});
     const signer = publicKey.toBase58();
 
     const ts = Date.now();
     const message = `TUMO-CLAIM|${ts}|${signer}|${claimable.toFixed(6)}`;
-    const bytes = new TextEncoder().encode(message);
-    const sig = await provider.signMessage(bytes, "utf8");
+    const bytes   = new TextEncoder().encode(message);
+    const sig     = await provider.signMessage(bytes, "utf8");
     const signature = bs58.default.encode(sig.signature);
 
-    const payload = {
-      chain:"solana",
-      ts, signer, message, signature,
-      claimPoints: claimable
-    };
+    const payload = { chain:"solana", ts, signer, message, signature, claimPoints: claimable };
 
-    if (!API_URL.startsWith("http")){
-      msgEl.textContent = "[DRY RUN] API_URL 설정 필요";
-      return;
-    }
-
-    const r = await fetch(API_URL, {
+    const r = await fetch(API_CLAIM, {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify(payload)
     });
     const j = await r.json();
-
     if (j.ok){
-      localStorage.setItem('tumo_claimed', String(points)); // 전부 확정
-      msgEl.textContent = "✅ Claim 완료!";
-      location.reload();
+      localStorage.setItem(SAVE_KEY_CLAIMED, String(points));
+      claimed = points;
+      refreshUI();
+      setMsg("✅ Claim 완료");
     }else{
-      msgEl.textContent = "서버 오류: " + (j.error||"");
+      setMsg("서버 오류: " + (j.error||""));
     }
   }catch(e){
-    document.getElementById('msg').textContent = "서명/요청 실패: " + e.message;
+    setMsg("서명/요청 실패: " + e.message);
   }
 }
 
-document.getElementById('claimBtn').addEventListener('click', claim);
+/** =========================
+ *  WIRE UP
+ *  ========================= */
+els.connect.addEventListener("click", connectWallet);
+els.disconnect.addEventListener("click", disconnectWallet);
+els.start.addEventListener("click", startMining);
+els.stop.addEventListener("click", stopMining);
+els.reset.addEventListener("click", resetMining);
+els.claim.addEventListener("click", doClaim);
+
+window.addEventListener("beforeunload", ()=>{ if (mining) sendUpdate().catch(()=>{}); });
+
+// 초기 렌더
+refreshUI();
 </script>
 </body>
 </html>

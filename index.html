@@ -6,20 +6,25 @@
   <title>TUMO</title>
   <style>
     :root{
-      /* 타이포 & 레이아웃 스케일 */
       --h1: clamp(24px, 4.4vw, 44px);
       --lead: clamp(13px, 1.6vw, 16px);
       --btn-py: clamp(10px, 1.2vw, 12px);
       --btn-px: clamp(16px, 2vw, 22px);
-      --icon: clamp(44px, 6vw, 64px);
-      --bot: clamp(120px, 19vw, 220px);
+
+      /* 상단 아이콘 크기 & 간격 */
+      --icon: clamp(70px, 8vw, 100px);
+      --symbols-bottom: clamp(28px, 5vw, 56px);
+
+      /* 봇은 살짝 작게 */
+      --bot: clamp(96px, 14vw, 170px);
+
       --wrap-w: min(94vw, 980px);
       --gap: clamp(10px, 2vw, 16px);
     }
 
     html,body{height:100%}
 
-    /* ⚡ 금빛 그라데이션 + 회로 배경 (원본 톤) */
+    /* 골드 회로 배경 */
     body{
       margin:0; text-align:center;
       font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
@@ -44,10 +49,11 @@
 
     .wrap{ width:var(--wrap-w); margin:0 auto; }
 
-    /* 상단 심볼 2개 */
+    /* 상단 심볼 */
     .symbols{
-      margin: 4px auto var(--gap);
-      display:flex; justify-content:center; align-items:center; gap: clamp(10px, 2vw, 18px);
+      margin: clamp(6px, 1.6vw, 12px) auto var(--symbols-bottom);
+      display:flex; justify-content:center; align-items:center;
+      gap: clamp(12px, 2vw, 20px);
       flex-wrap:wrap;
     }
     .symbols img{
@@ -55,52 +61,52 @@
       filter: drop-shadow(0 4px 14px rgba(0,0,0,.25));
     }
 
-    /* 타이틀/서브/리드 */
+    /* 타이틀 */
     h1{
-      font-size:var(--h1); line-height:1.18; margin:6px 0 6px; font-weight:900;
+      font-size:var(--h1); line-height:1.18;
+      margin: 0 0 clamp(10px, 1.8vw, 18px);
+      font-weight:900;
       text-shadow:1px 1px 3px rgba(255,255,255,.65);
-      padding: 0 6px;
     }
     .subtitle{
-      margin:0 0 8px; opacity:.9; font-style:italic; font-size: clamp(12px, 1.4vw, 15px)
+      margin:0 0 clamp(10px, 2vw, 18px);
+      opacity:.9; font-style:italic;
+      font-size: clamp(12px, 1.4vw, 15px)
     }
     .lead{
-      margin:0 auto var(--gap);
+      margin:0 auto clamp(14px, 2.6vw, 24px);
       max-width: 760px;
-      font-size: var(--lead); line-height:1.55; padding:0 6px;
+      font-size: var(--lead); line-height:1.55;
     }
-    .lead .brand{color:#ff6f3c; font-weight:900; letter-spacing:.3px}
+    .lead .brand{color:#ff6f3c; font-weight:900;}
 
     /* 액션 */
     .actions{
       display:flex; gap: clamp(8px, 2vw, 14px);
       justify-content:center; align-items:center; flex-wrap:wrap;
-      margin: var(--gap) 0 calc(var(--gap) + 2px);
+      margin: clamp(14px, 2.6vw, 24px) 0 clamp(16px, 3vw, 28px);
     }
     .btn{
       display:inline-block; padding: var(--btn-py) var(--btn-px);
       border-radius:12px; font-weight:800; text-decoration:none;
       background:#ffd54f; color:#111; box-shadow:0 6px 20px rgba(0,0,0,.18);
-      white-space:nowrap;
     }
-    .link{
-      color:#1a1a1a; text-decoration:underline; font-weight:700;
-      font-size: clamp(13px, 1.7vw, 16px); opacity:.95; white-space:nowrap;
-    }
+    .link{ color:#1a1a1a; text-decoration:underline; font-weight:700; }
 
-    /* 중앙 봇(포스터 이미지 제거, 캐릭만) */
+    /* 중앙 봇 */
     .bot{
-      width:var(--bot); height:auto; margin: calc(var(--gap) + 4px) auto 10px; display:block;
+      width:var(--bot); height:auto;
+      margin: clamp(14px, 3vw, 28px) auto clamp(8px, 1.6vw, 12px);
+      display:block;
       filter: drop-shadow(0 8px 26px rgba(0,0,0,.28));
       max-width: 70vw;
     }
 
-    /* 하단 정보 3줄(가운데 정렬, 불릿 없이) */
+    /* 하단 소개 */
     .info{
       margin: 6px auto 0;
       font-size: clamp(13px, 1.55vw, 15px);
-      line-height:1.7;
-      color:#1c1600;
+      line-height:1.7; color:#1c1600;
     }
     .info .row{margin:3px 0}
 
@@ -108,9 +114,24 @@
     footer{
       margin-top: clamp(14px, 2.5vw, 20px);
       font-size: clamp(12px, 1.5vw, 13px);
-      opacity:.9; line-height:1.55;
+      opacity:.9;
     }
-    footer a{ color:#0645ad; text-decoration:none }
+
+    /* X 아이콘 */
+    .x-icon{
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      background:#000;
+      border-radius:50%;
+      padding:10px;
+      display:inline-flex;align-items:center;justify-content:center;
+      box-shadow:0 6px 18px rgba(0,0,0,.3);
+      transition:.15s ease;
+    }
+    .x-icon:hover{ transform:scale(1.05); box-shadow:0 10px 24px rgba(0,0,0,.35);}
+    .x-icon img{ width:28px; height:28px; }
   </style>
 </head>
 <body>
@@ -118,12 +139,12 @@
 
     <!-- 상단 심볼 -->
     <div class="symbols">
-      <img src="./assets/512TMC.png" alt="TUMO Logo">
+      <img src="./assets/512TMC.png" alt="TUMO Coin">
       <img src="./assets/ChatG.png"  alt="TUMO Symbol">
     </div>
 
     <!-- 헤드라인 -->
-    <h1>The AI-Born Web3 Ecosystem — Built for<br>Utility, Driven by Community.</h1>
+    <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
     <p class="subtitle">(AI-designed, User-owned — AI-Born)</p>
 
     <p class="lead">
@@ -137,10 +158,10 @@
       <a href="/mine/mining.html" class="link">⛏ Start Mining</a>
     </div>
 
-    <!-- 캐릭터(포스터 대신 캐릭 단독 PNG/투명 추천) -->
+    <!-- 중앙 봇 -->
     <img src="./assets/tutu.png" alt="Tumo Bot" class="bot" />
 
-    <!-- Welcome 섹션 (왼쪽 원본처럼 간결하게) -->
+    <!-- About -->
     <h1 id="about">🌐 Welcome to TUMO</h1>
     <div class="info">
       <div class="row">Website: <a href="https://tumoofc.github.io">https://tumoofc.github.io</a></div>
@@ -152,5 +173,10 @@
       Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.
     </footer>
   </div>
+
+  <!-- X 아이콘 -->
+  <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon">
+    <img src="./assets/x_icon.png" alt="X">
+  </a>
 </body>
 </html>

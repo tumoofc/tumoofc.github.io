@@ -8,11 +8,14 @@
     :root{
       --h1: clamp(26px, 5vw, 52px);
       --lead: clamp(14px, 1.7vw, 18px);
-      --btn-py: clamp(11px, 1.3vw, 13px);
-      --btn-px: clamp(18px, 2.2vw, 26px);
+
+      /* Buttons bigger */
+      --btn-py: clamp(12px, 1.6vw, 16px);
+      --btn-px: clamp(22px, 2.8vw, 32px);
+      --btn-radius: 18px;
 
       --icon: clamp(96px, 12vw, 128px);
-      --symbols-bottom: clamp(46px, 7vw, 80px);   /* ⬆️ 심볼 간격 확장 */
+      --symbols-bottom: clamp(46px, 7vw, 80px);
 
       --bot: clamp(92px, 18vw, 200px);
       --wrap-w: min(94vw, 980px);
@@ -21,6 +24,7 @@
 
     html,body{height:100%}
 
+    /* 밝은 골드 + 회로 */
     body{
       margin:0; text-align:center;
       font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
@@ -38,7 +42,6 @@
       background-attachment: fixed;
       padding: clamp(18px, 3vw, 30px) 12px;
     }
-
     .wrap{ width:var(--wrap-w); margin:0 auto; }
 
     .symbols{
@@ -63,7 +66,7 @@
     .subtitle{
       margin:0 auto clamp(16px, 3vw, 28px);
       opacity:.95; font-style:italic;
-      font-size: clamp(15px, 1.8vw, 19px);  /* ⬆️ 부제 더 크게 */
+      font-size: clamp(15px, 1.8vw, 19px);
     }
     .lead{
       margin:0 auto clamp(20px, 3vw, 34px);
@@ -73,20 +76,34 @@
     .lead .brand{color:#ff6f3c; font-weight:900;}
 
     .actions{
-      display:flex; gap: clamp(12px, 2.6vw, 20px);
+      display:flex; gap: clamp(14px, 3vw, 22px);
       justify-content:center; align-items:center; flex-wrap:wrap;
       margin: clamp(20px, 3.4vw, 36px) 0 clamp(18px, 3vw, 30px);
     }
     .btn{
-      display:inline-flex; align-items:center; gap:10px;
+      display:inline-flex; align-items:center; gap:12px;
       padding: var(--btn-py) var(--btn-px);
-      border-radius:14px; font-weight:800; text-decoration:none;
-      background:#ffd633; color:#111; box-shadow:0 8px 22px rgba(0,0,0,.18);
-      border:1px solid rgba(255,230,120,.9);
+      border-radius: var(--btn-radius);
+      font-weight:800; text-decoration:none;
+      background:#ffd633; color:#111;
+      border:1px solid rgba(255,230,120,.95);
+      box-shadow:
+        0 10px 24px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.6);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      will-change: transform;
     }
-    .btn.ghost{
-      background: rgba(255,255,255,.15);
-      border:1px solid rgba(0,0,0,.15);
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .btn:active{ transform: translateY(0); filter: brightness(.98); }
+
+    /* ▶ 우측 빨간 CTA */
+    .btn.red{
+      background: linear-gradient(#ff5a3a, #e5381e);
+      color:#fff;
+      border:1px solid rgba(210,20,0,.75);
+      box-shadow:
+        0 12px 26px rgba(229,56,30,.28),
+        inset 0 1px 0 rgba(255,180,170,.6);
     }
 
     .bot{
@@ -113,6 +130,7 @@
       opacity:.9;
     }
 
+    /* X(우하단) */
     .x-icon{
       position: fixed; bottom: 20px; right: 20px;
       z-index: 9999;
@@ -126,14 +144,11 @@
 </head>
 <body>
   <div class="wrap">
-
-    <!-- 상단 심볼 -->
     <div class="symbols">
       <img src="./assets/512TMC.png" alt="TUMO Coin">
       <img src="./assets/ChatG.png"  alt="TUMO Symbol">
     </div>
 
-    <!-- 히어로 -->
     <div class="hero">
       <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
       <p class="subtitle">(AI-designed, User-owned — AI-Born)</p>
@@ -145,7 +160,7 @@
 
       <div class="actions">
         <a href="#about" class="btn">🌐 About TUMO</a>
-        <a href="/mine/mining.html" class="btn ghost">⛏ Start Mining</a>
+        <a href="/mine/mining.html" class="btn red">⛏ Start Mining</a>
       </div>
     </div>
 

@@ -2,7 +2,7 @@
 const SOL = solanaWeb3;
 
 // TODO: set your Worker endpoint here
-const API_BASE = "https://YOUR-WORKER.workers.dev";
+const API_BASE = "https://tumo-mining.myworker.workers.dev";
 
 let walletPubkey = null;
 let ticking = false;

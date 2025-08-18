@@ -1,1 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TUMO – Mining</title>
+<style>
+  :root{
+    --w: min(94vw, 900px);
+    --card: min(92vw, 560px);
+  }
+  /* 🔴 레드 그라데이션 배경 */
+  body{
+    margin:0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    color:#fff; text-align:center;
+    background:
+      radial-gradient(circle at 50% 20%, rgba(255,110,90,.18), rgba(0,0,0,0) 60%),
+      radial-gradient(circle at 80% 80%, rgba(255,70,50,.18), rgba(0,0,0,0) 60%),
+      linear-gradient(160deg, #5a1010, #8c1414 45%, #b51616 85%);
+    min-height:100dvh; padding: 26px 12px 32px;
+  }
+  .wrap{width: var(--w); margin: 0 auto;}
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; margin-bottom: 22px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand img{ width:36px; height:36px }
+  .brand strong{ font-size: clamp(18px, 3.2vw, 22px) }
+  .back{
+    color:#ffd; text-decoration:none; font-weight:700;
+    opacity:.9; padding:8px 12px; border-radius:10px;
+    background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+  }
 
+  h1{ font-size: clamp(24px, 5vw, 42px); margin: 12px 0 6px }
+  .lead{ opacity:.92; margin-bottom: 20px }
+
+  .card{
+    margin: 16px auto 0; width: var(--card); text-align:left;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 18px; padding: 18px;
+    box-shadow: 0 14px 36px rgba(0,0,0,.35);
+  }
+  .row{ display:flex; justify-content:space-between; align-items:center; margin: 8px 0 }
+  .label{ opacity:.9 }
+  .value{ font-weight:800 }
+  .meter{
+    margin-top: 10px; height: 10px; border-radius: 999px;
+    background: rgba(255,255,255,.15); overflow: hidden;
+  }
+  .bar{
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #ffd633, #ff8a4c);
+    box-shadow: 0 0 12px rgba(255,180,0,.55);
+    transition: width .25s ease;
+  }
+
+  .actions{
+    display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top: 16px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding: 12px 20px; border-radius: 14px; text-decoration:none;
+    border: 1px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.12); color:#fff; font-weight:800;
+    box-shadow: 0 10px 22px rgba(0,0,0,.25);
+    transition: transform .12s ease, filter .12s ease;
+  }
+  .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+  .btn.primary{
+    background: linear-gradient(#ffd633, #f4b030);
+    border-color: rgba(255,220,120,.8);
+    color:#1a1a1a;
+  }
+  .muted{ opacity:.85; margin-top: 14px; font-size: 13px }
+
+  footer{ margin-top: 24px; opacity:.8; font-size: 12px }
+  footer a{ color:#fff; }
+
+  /* bot image (optional) */
+  .bot{
+    width: clamp(120px, 22vw, 220px);
+    display:block; margin: 20px auto 8px;
+    filter: drop-shadow(0 10px 26px rgba(0,0,0,.35));
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/" class="back">← Back</a>
+      <div class="brand">
+        <img src="../assets/512TMC.png" alt="TUMO">
+        <strong>TUMO Mining</strong>
+      </div>
+      <span style="width:64px"></span>
+    </div>
+
+    <img src="../assets/tutu.png" alt="Tumo Bot" class="bot" />
+    <h1>Start Mining</h1>
+    <p class="lead">Lightweight in-browser <b>simulation</b> of mining points. No real crypto mining.</p>
+
+    <div class="card" role="region" aria-label="Mining panel">
+      <div class="row"><span class="label">Status</span>  <span class="value" id="status">Idle</span></div>
+      <div class="row"><span class="label">Points</span>  <span class="value" id="points">0.000</span></div>
+      <div class="row"><span class="label">Hashrate (sim.)</span> <span class="value" id="hash">0 H/s</span></div>
+      <div class="meter" aria-hidden="true"><div class="bar" id="bar"></div></div>
+      <div class="actions">
+        <button class="btn primary" id="startBtn">⛏ Start</button>
+        <button class="btn" id="stopBtn">■ Stop</button>
+        <button class="btn" id="resetBtn">↺ Reset</button>
+      </div>
+      <p class="muted">
+        This is a harmless demo that simulates progress using timers.
+        It does not mine real cryptocurrencies or use external networks.
+      </p>
+    </div>
+
+    <footer>
+      Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.
+    </footer>
+  </div>
+
+<script>
+  // ---- lightweight timer-based simulation (CPU friendly) ----
+  const statusEl = document.getElementById('status');
+  const pointsEl = document.getElementById('points');
+  const hashEl   = document.getElementById('hash');
+  const barEl    = document.getElementById('bar');
+
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn  = document.getElementById('stopBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let running = false;
+  let points = 0;
+  let tick = 0;
+  let timer = null;
+
+  function fmt(n){ return n.toFixed(3); }
+
+  function setHashrate(){
+    // simulate gentle hashrate fluctuation (for UI only)
+    const base = 120 + Math.sin(tick/10)*20 + Math.random()*10; // ~120~150 H/s
+    hashEl.textContent = base.toFixed(0) + ' H/s';
+  }
+
+  function loop(){
+    tick++;
+    // progress
+    points += 0.005 + Math.random()*0.004; // ~0.5 ~ 0.9 per second
+    pointsEl.textContent = fmt(points);
+
+    // bar animation
+    const pct = (tick % 100) / 100 * 100;
+    barEl.style.width = pct + '%';
+
+    setHashrate();
+  }
+
+  function start(){
+    if (running) return;
+    running = true;
+    statusEl.textContent = 'Mining…';
+    // 10x per second (100ms) keeps it light
+    timer = setInterval(loop, 100);
+  }
+  function stop(){
+    if (!running) return;
+    running = false;
+    statusEl.textContent = 'Paused';
+    clearInterval(timer);
+    timer = null;
+  }
+  function reset(){
+    stop();
+    points = 0; tick = 0;
+    pointsEl.textContent = fmt(points);
+    hashEl.textContent = '0 H/s';
+    barEl.style.width = '0%';
+    statusEl.textContent = 'Idle';
+  }
+
+  startBtn.addEventListener('click', start);
+  stopBtn.addEventListener('click', stop);
+  resetBtn.addEventListener('click', reset);
+</script>
+</body>
+</html>

@@ -17,8 +17,8 @@
       --btn-radius: 18px;
     }
 
-    /* 골드 회로 배경 (원본 톤) */
     html,body{height:100%}
+    /* 골드 회로 배경 */
     body{
       margin:0; text-align:center; color:#111;
       font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
@@ -99,39 +99,6 @@
       width: var(--hero-w); margin: clamp(18px, 2.8vw, 30px) auto 0;
       font-size: clamp(12px, 1.5vw, 13px); opacity:.9;
     }
-
-    /* === Earn Hub === */
-    .earn-hub { margin: 36px auto 24px; width: min(980px, 94vw); }
-    .earn-hub h2 { font-size: clamp(20px, 3vw, 28px); margin: 0 0 14px; font-weight: 900; }
-    .earn-grid {
-      display: grid; gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-    .earn-card {
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(0,0,0,.12);
-      border-radius: 14px;
-      padding: 16px;
-      text-align: left;
-      box-shadow: 0 10px 24px rgba(0,0,0,.18);
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-    }
-    .earn-card:hover { transform: translateY(-2px); filter: brightness(1.03); }
-    .earn-card .row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .earn-card img.icon { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
-    .earn-card h3 { margin: 0; font-size: 18px; }
-    .earn-card p { margin: 6px 0 12px; opacity: .9; line-height: 1.45; }
-    .earn-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .earn-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 800;
-      border: 1px solid rgba(255,255,255,.2); background: #ffd54f; color: #111;
-    }
-    .earn-btn.outline { background: rgba(255,255,255,.10); color: #fff; border-color: rgba(255,255,255,.25); }
-    .badge-new {
-      display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px;
-      background:#1a1a1a; color:#ffd54f; border:1px solid rgba(255,213,79,.6); margin-left:8px;
-    }
   </style>
 </head>
 <body>
@@ -154,71 +121,14 @@
       </p>
 
       <div class="actions">
-        <!-- 허브로 스크롤 유도 -->
-        <a href="#earn-hub" class="btn">🌐 About TUMO</a>
-        <a href="#earn-hub" class="btn red">⛏ Go to Earn Hub</a>
+        <a href="#about" class="btn">🌐 About TUMO</a>
+        <!-- ✅ 빨간 배너: Earn Hub 별도 페이지로 이동 -->
+        <a href="/earn/index.html" class="btn red">⛏ Go to Earn Hub</a>
       </div>
     </div>
 
-    <!-- 캐릭터 (투명 PNG 권장) -->
+    <!-- 캐릭터 -->
     <img src="./assets/tutu.png" alt="Tumo Bot" class="bot" />
-
-    <!-- === EARN HUB: 코인 얻기 선택 화면 === -->
-    <section class="earn-hub" id="earn-hub">
-      <h2>Earn Hub <span class="badge-new">NEW</span></h2>
-      <div class="earn-grid">
-
-        <!-- 1) 채굴 (활성) -->
-        <article class="earn-card">
-          <div class="row">
-            <img class="icon" src="./assets/tumo_face.png" alt="Mining">
-            <h3>Web Mining</h3>
-          </div>
-          <p>브라우저에서 가볍게 포인트를 쌓고, 나중에 TUMO로 교환하세요. (Phantom 연결 지원)</p>
-          <div class="earn-actions">
-            <a class="earn-btn" href="/mine/mining.html">⛏ Start Mining</a>
-            <a class="earn-btn outline" href="/mine/board.html">🏆 Leaderboard</a>
-          </div>
-        </article>
-
-        <!-- 2) Tap Game (자리표시자) -->
-        <article class="earn-card">
-          <div class="row">
-            <img class="icon" src="./assets/tmc_coin.png" alt="Tap">
-            <h3>Tap Game</h3>
-          </div>
-          <p>간단한 탭/반응 게임으로 보상을 획득하세요. (광고 시 리차지)</p>
-          <div class="earn-actions">
-            <a class="earn-btn outline" href="/tap/index.html">▶ Play (soon)</a>
-          </div>
-        </article>
-
-        <!-- 3) Puzzle Quest (자리표시자) -->
-        <article class="earn-card">
-          <div class="row">
-            <img class="icon" src="./assets/512TMC.png" alt="Puzzle">
-            <h3>Puzzle Quest</h3>
-          </div>
-          <p>퍼즐/퀘스트를 완료하고 추가 포인트를 적립하세요. 일일 미션 제공.</p>
-          <div class="earn-actions">
-            <a class="earn-btn outline" href="/quest/index.html">🧩 Start (soon)</a>
-          </div>
-        </article>
-
-        <!-- 4) Streak Bonus (자리표시자) -->
-        <article class="earn-card">
-          <div class="row">
-            <img class="icon" src="./assets/tumo_face.png" alt="Streak">
-            <h3>Streak Bonus</h3>
-          </div>
-          <p>연속 접속 보너스. 7일 스트릭마다 추가 포인트/배수 제공.</p>
-          <div class="earn-actions">
-            <a class="earn-btn outline" href="/streak/index.html">🔥 Check-in (soon)</a>
-          </div>
-        </article>
-
-      </div>
-    </section>
 
     <!-- 소개/푸터 -->
     <h1 id="about">🌐 Welcome to TUMO</h1>

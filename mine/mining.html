@@ -1,368 +1,236 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TUMO – Mining</title>
-<link rel="preconnect" href="https://unpkg.com">
-<script src="https://unpkg.com/@solana/web3.js@1.91.6/lib/index.iife.min.js"></script>
-<script src="https://unpkg.com/bs58@5.0.0/dist/bs58.min.js"></script>
-<style>
-  :root{
-    --card-w: min(860px, 92vw);
-    --gold-1:#ffd54f; --gold-2:#ffbf2b;
-  }
-  body{
-    margin:0; color:#fff; font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; text-align:center;
-    min-height:100dvh; padding:24px 12px;
-    background: radial-gradient(1200px 500px at 50% -10%, rgba(255,230,160,.35), transparent 60%),
-               linear-gradient(170deg, #5a1010, #8d1414 46%, #b51616 85%);
-  }
-  .wrap{max-width:var(--card-w); margin:0 auto}
-  h1{font-size:clamp(28px, 5vw, 44px); margin:18px 0 6px}
-  p.lead{opacity:.9; margin:6px 0 18px}
-  .row{
-    display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:14px;
-  }
-  .btn{
-    display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:14px; cursor:pointer; user-select:none;
-    font-weight:800; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#fff;
-    box-shadow:0 8px 24px rgba(0,0,0,.22);
-  }
-  .btn.gold{
-    background: linear-gradient(var(--gold-1), var(--gold-2));
-    border:1px solid rgba(255,220,120,.85); color:#111;
-  }
-  .btn:disabled{opacity:.5; cursor:not-allowed}
-  .pill{padding:10px 14px; border-radius:12px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2)}
-  .card{
-    width:var(--card-w); margin:14px auto; text-align:left;
-    background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.15); border-radius:16px;
-    box-shadow:0 10px 26px rgba(0,0,0,.35); overflow:hidden;
-  }
-  .card .hd{
-    padding:12px 16px; font-weight:900; background:rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.12)
-  }
-  .card .bd{padding:16px}
-  .grid{display:grid; grid-template-columns: 1fr auto; gap:8px 16px; align-items:center}
-  .label{opacity:.9}
-  .val{font-weight:900}
-  .bar{height:10px; background:rgba(255,255,255,.13); border-radius:8px; overflow:hidden}
-  .bar > i{display:block; height:100%; width:0%; background:linear-gradient(#ff944d, #ff5d2e)}
-  .muted{opacity:.8; font-size:13px}
-  footer{opacity:.85; margin-top:18px; font-size:13px}
-  a.link{color:#ffd}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TUMO</title>
+  <style>
+    :root{
+      --h1: clamp(26px, 5vw, 52px);
+      --lead: clamp(14px, 1.7vw, 18px);
+      --icon: clamp(96px, 12vw, 128px);
+      --symbols-bottom: clamp(46px, 7vw, 80px);
+      --hero-w: min(90vw, 800px);
+      --wrap-w: min(94vw, 980px);
+      --btn-py: clamp(12px, 1.6vw, 16px);
+      --btn-px: clamp(22px, 2.8vw, 32px);
+      --btn-radius: 18px;
+    }
+
+    /* 골드 회로 배경 (원본 톤) */
+    html,body{height:100%}
+    body{
+      margin:0; text-align:center; color:#111;
+      font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 50% 36%,
+          rgba(255,245,190,1) 0%,
+          rgba(255,235,140,.85) 28%,
+          rgba(255,220,80,.55) 56%,
+          rgba(255,200,40,.28) 78%,
+          rgba(255,190,0,.12) 92%,
+          rgba(255,190,0,0) 100%),
+        url("./assets/Chat.png") center top / cover no-repeat,
+        #ffe680;
+      background-attachment: fixed;
+      padding: clamp(18px, 3vw, 30px) 12px;
+    }
+    @media (max-width:900px){ body{ background-attachment: scroll; } }
+
+    .wrap{ width:var(--wrap-w); margin:0 auto; }
+    .symbols{
+      margin: clamp(10px, 2vw, 18px) auto var(--symbols-bottom);
+      display:flex; justify-content:center; align-items:center;
+      gap: clamp(18px, 3vw, 26px); flex-wrap:wrap;
+    }
+    .symbols img{ width:var(--icon); height:var(--icon); object-fit:contain; filter: drop-shadow(0 6px 18px rgba(0,0,0,.3)); }
+
+    .hero{ width: var(--hero-w); margin: 0 auto; }
+    h1{
+      font-size:var(--h1); line-height:1.18; margin: 0 auto clamp(14px, 2.6vw, 26px);
+      font-weight:900; text-shadow:0 2px 8px rgba(255,255,255,.4);
+    }
+    .subtitle{
+      margin:0 auto clamp(16px, 3vw, 28px); opacity:.95; font-style:italic;
+      font-size: clamp(15px, 1.8vw, 19px);
+    }
+    .lead{
+      margin:0 auto clamp(20px, 3vw, 34px); max-width: 760px;
+      font-size: var(--lead); line-height:1.6;
+    }
+    .lead .brand{ color:#ff6f3c; font-weight:900; }
+
+    .actions{
+      display:flex; gap: clamp(14px, 3vw, 22px);
+      justify-content:center; align-items:center; flex-wrap:wrap;
+      margin: clamp(20px, 3.4vw, 36px) 0 clamp(18px, 3vw, 30px);
+    }
+    .btn{
+      display:inline-flex; align-items:center; gap:12px;
+      padding: var(--btn-py) var(--btn-px);
+      border-radius: var(--btn-radius);
+      font-weight:800; text-decoration:none; cursor:pointer;
+      background:#ffd633; color:#111;
+      border:1px solid rgba(255,230,120,.95);
+      box-shadow:0 10px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.6);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .btn.red{
+      background: linear-gradient(#ff5a3a, #e5381e); color:#fff; border:1px solid rgba(210,20,0,.75);
+      box-shadow: 0 12px 26px rgba(229,56,30,.28), inset 0 1px 0 rgba(255,180,170,.6);
+    }
+
+    .bot{
+      width: clamp(92px, 18vw, 200px); height:auto;
+      margin: clamp(20px, 3.4vw, 34px) auto clamp(8px, 1.4vw, 12px);
+      display:block; filter: drop-shadow(0 10px 28px rgba(0,0,0,.3));
+      max-width: 70vw;
+    }
+
+    .info{
+      width: var(--hero-w); margin: 12px auto 0; font-size: clamp(14px, 1.55vw, 15px);
+      line-height:1.72; color:#1c1600;
+    }
+    .info .row{margin:6px 0}
+    .info a{ color:#0645ad; text-decoration: underline; }
+
+    footer{
+      width: var(--hero-w); margin: clamp(18px, 2.8vw, 30px) auto 0;
+      font-size: clamp(12px, 1.5vw, 13px); opacity:.9;
+    }
+
+    /* === Earn Hub === */
+    .earn-hub { margin: 36px auto 24px; width: min(980px, 94vw); }
+    .earn-hub h2 { font-size: clamp(20px, 3vw, 28px); margin: 0 0 14px; font-weight: 900; }
+    .earn-grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .earn-card {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+    .earn-card:hover { transform: translateY(-2px); filter: brightness(1.03); }
+    .earn-card .row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .earn-card img.icon { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+    .earn-card h3 { margin: 0; font-size: 18px; }
+    .earn-card p { margin: 6px 0 12px; opacity: .9; line-height: 1.45; }
+    .earn-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .earn-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 800;
+      border: 1px solid rgba(255,255,255,.2); background: #ffd54f; color: #111;
+    }
+    .earn-btn.outline { background: rgba(255,255,255,.10); color: #fff; border-color: rgba(255,255,255,.25); }
+    .badge-new {
+      display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px;
+      background:#1a1a1a; color:#ffd54f; border:1px solid rgba(255,213,79,.6); margin-left:8px;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Start Mining</h1>
-  <p class="lead">Lightweight in-browser simulation. Signed updates can be verified by the server (no real crypto mining).</p>
+  <div class="wrap">
 
-  <div class="row">
-    <span id="walletPill" class="pill">Wallet: Disconnected</span>
-    <button id="connectBtn" class="btn gold">🔗 Connect Phantom</button>
-    <button id="disconnectBtn" class="btn">⏏ Disconnect</button>
-
-    <a class="btn" href="/mine/board.html">🏆 Leaderboard</a>
-    <a class="btn" href="/">🏠 Back</a>
-  </div>
-
-  <div class="card">
-    <div class="hd">Session</div>
-    <div class="bd">
-      <div class="grid">
-        <div class="label">Status</div>
-        <div class="val" id="statusVal">Paused</div>
-
-        <div class="label">Points</div>
-        <div class="val"><span id="pointsVal">0.000</span></div>
-
-        <div class="label">Claimed</div>
-        <div class="val"><span id="claimedVal">0.000</span></div>
-
-        <div class="label">Hashrate (sim.)</div>
-        <div class="val"><span id="hashVal">0 H/s</span></div>
-      </div>
-
-      <div class="bar" style="margin:14px 0 10px">
-        <i id="hashBar"></i>
-      </div>
-
-      <div class="row">
-        <button id="startBtn" class="btn gold">▶ Start</button>
-        <button id="stopBtn" class="btn">⏸ Stop</button>
-        <button id="resetBtn" class="btn">↺ Reset</button>
-        <button id="claimBtn" class="btn gold">✅ Claim Now</button>
-      </div>
-
-      <p class="muted" id="msg">—</p>
+    <!-- 상단 심볼 -->
+    <div class="symbols">
+      <img src="./assets/512TMC.png" alt="TUMO Coin">
+      <img src="./assets/ChatG.png"  alt="TUMO Symbol">
     </div>
+
+    <!-- 히어로 -->
+    <div class="hero">
+      <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
+      <p class="subtitle">(AI-designed, User-owned — AI-Born)</p>
+
+      <p class="lead">
+        <span class="brand">TUMO</span> — Time Utility Machine Organizer:<br>
+        An AI-Web3 ecosystem designed to save time and create real utility value.
+      </p>
+
+      <div class="actions">
+        <!-- 허브로 스크롤 유도 -->
+        <a href="#earn-hub" class="btn">🌐 About TUMO</a>
+        <a href="#earn-hub" class="btn red">⛏ Go to Earn Hub</a>
+      </div>
+    </div>
+
+    <!-- 캐릭터 (투명 PNG 권장) -->
+    <img src="./assets/tutu.png" alt="Tumo Bot" class="bot" />
+
+    <!-- === EARN HUB: 코인 얻기 선택 화면 === -->
+    <section class="earn-hub" id="earn-hub">
+      <h2>Earn Hub <span class="badge-new">NEW</span></h2>
+      <div class="earn-grid">
+
+        <!-- 1) 채굴 (활성) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/tumo_face.png" alt="Mining">
+            <h3>Web Mining</h3>
+          </div>
+          <p>브라우저에서 가볍게 포인트를 쌓고, 나중에 TUMO로 교환하세요. (Phantom 연결 지원)</p>
+          <div class="earn-actions">
+            <a class="earn-btn" href="/mine/mining.html">⛏ Start Mining</a>
+            <a class="earn-btn outline" href="/mine/board.html">🏆 Leaderboard</a>
+          </div>
+        </article>
+
+        <!-- 2) Tap Game (자리표시자) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/tmc_coin.png" alt="Tap">
+            <h3>Tap Game</h3>
+          </div>
+          <p>간단한 탭/반응 게임으로 보상을 획득하세요. (광고 시 리차지)</p>
+          <div class="earn-actions">
+            <a class="earn-btn outline" href="/tap/index.html">▶ Play (soon)</a>
+          </div>
+        </article>
+
+        <!-- 3) Puzzle Quest (자리표시자) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/512TMC.png" alt="Puzzle">
+            <h3>Puzzle Quest</h3>
+          </div>
+          <p>퍼즐/퀘스트를 완료하고 추가 포인트를 적립하세요. 일일 미션 제공.</p>
+          <div class="earn-actions">
+            <a class="earn-btn outline" href="/quest/index.html">🧩 Start (soon)</a>
+          </div>
+        </article>
+
+        <!-- 4) Streak Bonus (자리표시자) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/tumo_face.png" alt="Streak">
+            <h3>Streak Bonus</h3>
+          </div>
+          <p>연속 접속 보너스. 7일 스트릭마다 추가 포인트/배수 제공.</p>
+          <div class="earn-actions">
+            <a class="earn-btn outline" href="/streak/index.html">🔥 Check-in (soon)</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- 소개/푸터 -->
+    <h1 id="about">🌐 Welcome to TUMO</h1>
+    <div class="info">
+      <div class="row">Website: <a href="https://tumoofc.github.io">https://tumoofc.github.io</a></div>
+      <div class="row">Token Utility: Click2Earn, Governance, DAO</div>
+      <div class="row">Vision: To become a time-saving AI companion, not a replacement.</div>
+    </div>
+
+    <footer>
+      Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.
+    </footer>
   </div>
-
-  <footer>Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.</footer>
-</div>
-
-<script>
-/** =========================
- *  CONFIG
- *  ========================= */
-const API_BASE   = "https://YOUR_API_DOMAIN.example.com/tumo"; // ← 서버 쓰면 이걸로 교체
-const API_MINING = API_BASE + "/mining";
-const API_CLAIM  = API_BASE + "/claim";
-
-const SAVE_KEY_POINTS  = "tumo_points";
-const SAVE_KEY_CLAIMED = "tumo_claimed";
-const SAVE_KEY_SESSION = "tumo_session";
-
-/** =========================
- *  STATE
- *  ========================= */
-let provider = null;
-let wallet  = null; // base58
-let mining  = false;
-let points  = Number(localStorage.getItem(SAVE_KEY_POINTS)  || "0");
-let claimed = Number(localStorage.getItem(SAVE_KEY_CLAIMED) || "0");
-let sessionId = localStorage.getItem(SAVE_KEY_SESSION) || crypto.randomUUID();
-
-localStorage.setItem(SAVE_KEY_SESSION, sessionId);
-
-/** =========================
- *  UI
- *  ========================= */
-const $ = s => document.querySelector(s);
-const els = {
-  walletPill: $("#walletPill"),
-  statusVal:  $("#statusVal"),
-  pointsVal:  $("#pointsVal"),
-  claimedVal: $("#claimedVal"),
-  hashVal:    $("#hashVal"),
-  hashBar:    $("#hashBar"),
-  msg:        $("#msg"),
-  connect:    $("#connectBtn"),
-  disconnect: $("#disconnectBtn"),
-  start:      $("#startBtn"),
-  stop:       $("#stopBtn"),
-  reset:      $("#resetBtn"),
-  claim:      $("#claimBtn"),
-};
-
-function fmt(n){ return Number(n||0).toFixed(3); }
-function setMsg(t){ els.msg.textContent = t; }
-function refreshUI(){
-  els.pointsVal.textContent  = fmt(points);
-  els.claimedVal.textContent = fmt(claimed);
-  els.statusVal.textContent  = mining ? "Running" : "Paused";
-}
-
-/** =========================
- *  PHANTOM
- *  ========================= */
-function getProvider(){
-  if ("solana" in window && window.solana?.isPhantom) return window.solana;
-  return null;
-}
-
-async function connectWallet(){
-  try{
-    provider = getProvider();
-    if (!provider){ setMsg("Phantom wallet not found."); return; }
-    const { publicKey } = await provider.connect({ onlyIfTrusted:false });
-    wallet = publicKey.toBase58();
-    els.walletPill.textContent = "Wallet: " + wallet.slice(0,4) + "…" + wallet.slice(-4);
-    setMsg("Wallet connected.");
-  }catch(e){ setMsg("Connect failed: " + e.message); }
-}
-
-async function disconnectWallet(){
-  try{
-    if (provider?.disconnect) await provider.disconnect();
-  }catch(e){}
-  wallet = null;
-  els.walletPill.textContent = "Wallet: Disconnected";
-  setMsg("Disconnected.");
-}
-
-/** =========================
- *  MINING TIMER
- *  ========================= */
-let tickHandle = null;
-let hashHandle = null;
-let accSinceLastSend = 0;        // 서버로 전송할 누적 증가량
-const SEND_INTERVAL_MS = 30_000; // 30초마다 기록
-
-function startMining(){
-  if (mining) return;
-  mining = true;
-  refreshUI();
-  setMsg("Started.");
-
-  // 매 0.5초 포인트 증가(시뮬)
-  tickHandle = setInterval(()=>{
-    const delta = 0.005 + Math.random()*0.015; // 0.005~0.020
-    points += delta;
-    accSinceLastSend += delta;
-    localStorage.setItem(SAVE_KEY_POINTS, String(points));
-    refreshUI();
-  }, 500);
-
-  // 해시레이트 애니메이션
-  hashHandle = setInterval(()=>{
-    const h = 80 + Math.floor(Math.random()*120);
-    els.hashVal.textContent = h + " H/s";
-    els.hashBar.style.width = Math.min(100, h/2) + "%";
-  }, 900);
-
-  // 주기적 서버 전송
-  scheduleSend();
-}
-
-function stopMining(){
-  mining = false;
-  clearInterval(tickHandle); tickHandle = null;
-  clearInterval(hashHandle); hashHandle = null;
-  refreshUI();
-  setMsg("Stopped.");
-  sendUpdate().catch(()=>{});
-}
-
-function resetMining(){
-  mining = false;
-  clearInterval(tickHandle); tickHandle = null;
-  clearInterval(hashHandle); hashHandle = null;
-
-  points = 0;
-  accSinceLastSend = 0;
-  localStorage.setItem(SAVE_KEY_POINTS, "0");
-  refreshUI();
-  setMsg("Reset.");
-  sendUpdate(true).catch(()=>{});
-}
-
-let sendTimer = null;
-function scheduleSend(){
-  clearTimeout(sendTimer);
-  sendTimer = setTimeout(()=>sendUpdate().then(scheduleSend), SEND_INTERVAL_MS);
-}
-
-/** =========================
- *  SIGN & SEND
- *  ========================= */
-async function signMessageObj(obj){
-  // 메시지 텍스트: 고정 포맷
-  const message =
-    `TUMO-UPDATE|${obj.ts}|${obj.sessionId}|${obj.signer}|`+
-    `${obj.totalPoints.toFixed(6)}|${obj.deltaPoints.toFixed(6)}`;
-  const bytes = new TextEncoder().encode(message);
-  // 지갑 없으면 서명 없이(DRY RUN)
-  if (!provider || !wallet) return { message, signature:null, signer:null };
-  const sig = await provider.signMessage(bytes, "utf8");
-  return {
-    message,
-    signature: bs58.default.encode(sig.signature),
-    signer: provider.publicKey.toBase58()
-  };
-}
-
-async function sendUpdate(reset=false){
-  // 서버 기록을 사용하지 않으면 DRY RUN
-  if (!API_BASE.startsWith("http")){
-    setMsg("[DRY RUN] API_BASE 미설정 – 로컬 저장만 합니다.");
-    accSinceLastSend = 0;
-    return;
-  }
-  // 증가량 없고 reset 아님 → 스킵
-  const delta = reset ? 0 : accSinceLastSend;
-  if (delta <= 0 && !reset) return;
-
-  const ts = Date.now();
-  const payload = {
-    chain:       "solana",
-    ts, sessionId,
-    signer: wallet || "anonymous",
-    totalPoints: points,
-    deltaPoints: reset ? 0 : delta
-  };
-  const signed = await signMessageObj(payload);
-  const body = { ...payload, ...signed };
-
-  try{
-    const r = await fetch(API_MINING, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(body)
-    });
-    const j = await r.json();
-    if (j.ok){
-      setMsg("Synced " + (reset?"(reset)":"") + " ✓");
-      accSinceLastSend = 0;
-    }else{
-      setMsg("Server error: " + (j.error||""));
-    }
-  }catch(e){
-    setMsg("Send failed: " + e.message);
-  }
-}
-
-/** =========================
- *  CLAIM
- *  ========================= */
-async function doClaim(){
-  const claimable = Math.max(0, points - claimed);
-  if (claimable <= 0){ setMsg("클레임 가능 포인트가 없습니다."); return; }
-
-  if (!API_BASE.startsWith("http")){
-    setMsg("[DRY RUN] Claim – API_BASE 없음.");
-    localStorage.setItem(SAVE_KEY_CLAIMED, String(points));
-    claimed = points;
-    refreshUI();
-    return;
-  }
-  if (!provider){ provider = getProvider(); }
-  if (!provider){ setMsg("Phantom wallet not found."); return; }
-  try{
-    const { publicKey } = await provider.connect({onlyIfTrusted:false});
-    const signer = publicKey.toBase58();
-
-    const ts = Date.now();
-    const message = `TUMO-CLAIM|${ts}|${signer}|${claimable.toFixed(6)}`;
-    const bytes   = new TextEncoder().encode(message);
-    const sig     = await provider.signMessage(bytes, "utf8");
-    const signature = bs58.default.encode(sig.signature);
-
-    const payload = { chain:"solana", ts, signer, message, signature, claimPoints: claimable };
-
-    const r = await fetch(API_CLAIM, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-    const j = await r.json();
-    if (j.ok){
-      localStorage.setItem(SAVE_KEY_CLAIMED, String(points));
-      claimed = points;
-      refreshUI();
-      setMsg("✅ Claim 완료");
-    }else{
-      setMsg("서버 오류: " + (j.error||""));
-    }
-  }catch(e){
-    setMsg("서명/요청 실패: " + e.message);
-  }
-}
-
-/** =========================
- *  WIRE UP
- *  ========================= */
-els.connect.addEventListener("click", connectWallet);
-els.disconnect.addEventListener("click", disconnectWallet);
-els.start.addEventListener("click", startMining);
-els.stop.addEventListener("click", stopMining);
-els.reset.addEventListener("click", resetMining);
-els.claim.addEventListener("click", doClaim);
-
-window.addEventListener("beforeunload", ()=>{ if (mining) sendUpdate().catch(()=>{}); });
-
-// 초기 렌더
-refreshUI();
-</script>
 </body>
 </html>

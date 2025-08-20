@@ -1,141 +1,242 @@
-<!-- 1) Phaser CDN -->
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TUMO – Mining (Phaser + Ads + P-Cap + Anti‑AFK)</title>
 
-<!-- 2) Canvas 컨테이너 -->
-<div id="mine-canvas" style="width:100%;max-width:860px;margin:16px auto;border-radius:16px;overflow:hidden"></div>
+  <!-- Phaser -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 
-<script>
-/** === CONFIG === */
-const ASSETS = {
-  miner:  'assets/miner_swing.png',  // 8프레임 스프라이트시트
-  dust:   'assets/dust.png',
-  shine:  'assets/shine.png',
-  swingSfx: 'assets/swing.mp3',
-  coinSfx:  'assets/coin.mp3'
-};
-const FRAME = { width: 256, height: 256, end: 7 }; // 0~7 총 8프레임
+  <!-- (선택) Google AdSense Auto Ads: 실제 client-id로 교체 후 주석 해제
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx"
+          crossorigin="anonymous"></script>
+  -->
 
-/** === PHASER GAME === */
-let miningState = { running:false, crit:false };
-let sceneRef = null;
+  <style>
+    :root{ --card-w:min(860px,92vw); --gold:#f4c063; --bg:#2c0606; --panel:#3b0d0d; }
+    *{ box-sizing:border-box }
+    body{ margin:0; background:#1a0000; color:#fff; font-family:system-ui,Segoe UI,Apple SD Gothic Neo,Roboto,Arial,sans-serif }
+    .wrap{ max-width:var(--card-w); margin:20px auto; padding:0 12px; }
+    .title{ font-size:28px; font-weight:800; text-align:center; margin:4px 0 10px }
+    .card{ background:var(--panel); border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.4); padding:14px }
+    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:8px 0 10px }
+    .btn{ appearance:none; border:0; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer }
+    .btn.start{ background:#ffd166; color:#3b1f00 }
+    .btn.stop{ background:#3a3a3a; color:#eaeaea }
+    .btn.claim{ background:#87e8a8; color:#00331b }
+    #mine-canvas{ width:100%; height:auto; display:block; background:var(--bg); border-radius:14px; overflow:hidden; }
+    .bar{ height:6px; background:linear-gradient(90deg, #8d3c3c, #8d3c3c); border-radius:3px; margin:8px 0 0 }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin:8px 2px }
+    .kpi{ font-size:14px; opacity:.95 }
+    .cap{ font-weight:800; color:#ffd166 }
+    .status{ text-align:center; opacity:.9; margin:6px 0 2px; font-size:14px }
 
-const phaserConfig = {
-  type: Phaser.AUTO,
-  parent: 'mine-canvas',
-  width: 860,
-  height: 280,
-  backgroundColor: '#3b0d0d',
-  physics: { default: 'arcade' },
-  audio: { disableWebAudio: false },
-  scene: {
-    preload, create, update
+    /* Anti‑AFK 모달 */
+    .modal{ position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.55); z-index:9999 }
+    .modal.show{ display:grid }
+    .modal .box{ width:min(440px, 92vw); background:#1f0a0a; border:2px solid #ffb347; border-radius:16px; padding:18px }
+    .modal .t{ font-weight:800; font-size:20px; margin-bottom:10px }
+    .modal .c{ font-size:14px; opacity:.95; margin-bottom:14px }
+    .modal .actions{ display:flex; gap:10px; justify-content:flex-end }
+    .btn.primary{ background:#ffd166; color:#3b1f00; }
+    .btn.ghost{ background:#3a3a3a; color:#eaeaea; }
+
+    /* 광고 샘플 영역 */
+    .ad-container{ margin:10px auto; display:flex; justify-content:center; }
+    .ad-box{ width:728px; height:90px; max-width:100%; background:#2c2c2c; border:1px dashed #777; color:#bbb; display:flex; align-items:center; justify-content:center; border-radius:10px; font-size:13px }
+    .sticky-ads{ position:fixed; left:0; right:0; bottom:6px; display:flex; justify-content:center; z-index:999; }
+    .sticky-ads .ad-box{ width:320px; height:50px }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- 상단 배너 광고 슬롯 (예시 div: 실제 광고 태그로 교체) -->
+    <div class="ad-container"><div class="ad-box">Top Banner Ad (728×90 / 320×100)</div></div>
+
+    <div class="title">Start Mining</div>
+
+    <div class="card">
+      <div class="toolbar">
+        <button id="startBtn" class="btn start">▶ Start</button>
+        <button id="stopBtn"  class="btn stop">Ⅱ Stop</button>
+        <button id="claimBtn" class="btn claim">✔ Claim</button>
+      </div>
+
+      <div id="mine-canvas"></div>
+      <div class="bar"></div>
+
+      <div class="row">
+        <div class="kpi">Status: <span id="status">Ready.</span></div>
+        <div class="kpi">Today: <span id="pNow" class="cap">0</span> / <span id="pCap" class="cap">60</span> P</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 고정 앵커 광고 (예시 div) -->
+  <div class="sticky-ads"><div class="ad-box">Bottom Anchor Ad (320×50)</div></div>
+
+  <!-- Anti‑AFK 팝업 -->
+  <div id="afkModal" class="modal" aria-hidden="true">
+    <div class="box">
+      <div class="t">Anti‑AFK 확인</div>
+      <div class="c">계속 채굴하려면 <b>10초 이내</b>에 확인 버튼을 눌러주세요.</div>
+      <div class="actions">
+        <button id="afkCancel" class="btn ghost">일시정지</button>
+        <button id="afkOk" class="btn primary">계속</button>
+      </div>
+      <div class="c" id="afkCountdown" style="margin-top:8px; opacity:.8">남은 시간: 10초</div>
+    </div>
+  </div>
+
+  <script>
+  /* ----------------- 설정 ----------------- */
+  const DAILY_CAP = 60;          // 일일 포인트 상한 (UI 표시 및 샘플 증가용)
+  const POINTS_PER_SEC = 0.6;    // 샘플: 초당 0.6P (1분=36P) — 실제는 서버 계산/검증이 필요
+
+  const PAGE_DIR   = location.pathname.replace(/[^\/]+$/, '');   // '/mine/'
+  const ASSET_BASE = PAGE_DIR + 'assets/';
+
+  const ASSETS = {
+    miner : ASSET_BASE + 'tutu_swing.png', // 256x256 x 8프레임
+    dust  : ASSET_BASE + 'dust.png',
+    shine : ASSET_BASE + 'shine.png',
+    swing : ASSET_BASE + 'swing.mp3',
+    coin  : ASSET_BASE + 'coin.mp3'
+  };
+
+  const ui = {
+    status : document.getElementById('status'),
+    pNow   : document.getElementById('pNow'),
+    pCap   : document.getElementById('pCap'),
+    start  : document.getElementById('startBtn'),
+    stop   : document.getElementById('stopBtn'),
+    claim  : document.getElementById('claimBtn')
+  };
+  ui.pCap.textContent = DAILY_CAP;
+
+  const afk = {
+    el: document.getElementById('afkModal'),
+    ok: document.getElementById('afkOk'),
+    cancel: document.getElementById('afkCancel'),
+    countdown: document.getElementById('afkCountdown'),
+    timer: null, sec: 10, interval: null
+  };
+
+  function setStatus(t){ ui.status.textContent = t; }
+
+  /* --------------- Phaser --------------- */
+  const W = 860, H = 280;
+  let sceneRef = null, mining = false, pToday = 0, lastTick = 0, afkClock = 0;
+
+  const game = new Phaser.Game({
+    type: Phaser.AUTO, parent:'mine-canvas', width:W, height:H,
+    backgroundColor:'#3b0d0d', physics:{ default:'arcade' }, audio:{ disableWebAudio:false },
+    scene:{ preload, create, update }
+  });
+
+  function preload(){
+    const g = this.add.graphics();
+    const draw = (v)=>{ g.clear().fillStyle(0xf4c063,1).fillRect(W*0.1, H*0.90, (W*0.8)*v, 6); };
+    this.load.on('progress', draw);
+    this.load.on('complete', ()=>g.destroy());
+
+    this.load.spritesheet('miner', ASSETS.miner, { frameWidth:256, frameHeight:256, endFrame:7 });
+    this.load.image('dust', ASSETS.dust);
+    this.load.image('shine', ASSETS.shine);
+    this.load.audio('swing', ASSETS.swing);
+    this.load.audio('coin',  ASSETS.coin);
+    this.load.on('loaderror', (f)=>{ setStatus(`Asset load failed: ${f.key}`); });
   }
-};
 
-const game = new Phaser.Game(phaserConfig);
+  function create(){
+    sceneRef = this;
+    setStatus('Ready.');
+    this.add.rectangle(0, 220, 2000, 8, 0x4a1e1e, 0.7).setOrigin(0);
 
-function preload() {
-  this.load.spritesheet('miner', ASSETS.miner, { frameWidth: FRAME.width, frameHeight: FRAME.height, endFrame: FRAME.end });
-  this.load.image('dust', ASSETS.dust);
-  this.load.image('shine', ASSETS.shine);
-  this.load.audio('swingSfx', ASSETS.swingSfx);
-  this.load.audio('coinSfx', ASSETS.coinSfx);
+    const miner = this.add.sprite(200, 190, 'miner', 0).setOrigin(0.5, 1.0).setScale(0.9);
+    this.anims.create({ key:'mine', frames:this.anims.generateFrameNumbers('miner',{start:0,end:7}), frameRate:12, repeat:-1 });
 
-  // 로딩 바(간단)
-  const w = this.cameras.main.width, h = this.cameras.main.height;
-  const g = this.add.graphics();
-  this.load.on('progress', v => {
-    g.clear().fillStyle(0xffd166,1).fillRect(w*0.1, h*0.85, (w*0.8)*v, 6);
-  });
-}
+    const dustGroup  = this.add.group({ defaultKey:'dust',  maxSize:40 });
+    const shineGroup = this.add.group({ defaultKey:'shine', maxSize:12 });
+    const swingSfx = this.sound.add('swing', { volume:0.22 });
+    const coinSfx  = this.sound.add('coin',  { volume:0.22 });
 
-function create() {
-  sceneRef = this;
-
-  // 배경 데코
-  this.add.rectangle(0, 220, 2000, 8, 0x6f2f2f).setOrigin(0); // 지면
-
-  // 캐릭터
-  const miner = this.add.sprite(200, 190, 'miner', 0).setScale(0.9).setOrigin(0.5, 1.0);
-  this.anims.create({
-    key: 'mine',
-    frames: this.anims.generateFrameNumbers('miner', { start: 0, end: FRAME.end }),
-    frameRate: 12,
-    repeat: -1
-  });
-
-  // 파편 그룹
-  const dustGroup = this.add.group({ defaultKey: 'dust', maxSize: 40 });
-  const shineGroup = this.add.group({ defaultKey: 'shine', maxSize: 12 });
-
-  // 사운드
-  const swingSfx = this.sound.add('swingSfx', { volume: 0.25 });
-  const coinSfx  = this.sound.add('coinSfx',  { volume: 0.25 });
-
-  // 상태 핸들러
-  this.events.on('start-mining', () => {
-    miner.play('mine');
-    miningState.running = true;
-    // 스윙 타이밍에 맞춰 파편/사운드
+    // 스윙 타이밍 이벤트
     this.time.addEvent({
-      delay: 250, loop: true, callback: () => {
-        if (!miningState.running) return;
+      delay: 260, loop:true, callback:()=>{
+        if(!mining) return;
+        if (swingSfx.context && swingSfx.context.state === 'suspended') swingSfx.context.resume();
         swingSfx.play();
         spawnDustBurst(this, dustGroup, 340, 190);
-        if (Phaser.Math.Between(0, 7) === 0) { // 가끔 크리티컬 반짝
-          spawnShine(this, shineGroup, 340, 150);
-        }
+        if (Phaser.Math.Between(0,7)===0) spawnShine(this, shineGroup, 340, 150);
       }
     });
-  });
 
-  this.events.on('stop-mining', () => {
-    miningState.running = false;
-    miner.stop().setFrame(0);
-  });
+    // 버튼
+    ui.start.addEventListener('click', ()=>{
+      if (pToday >= DAILY_CAP){ setStatus('Daily cap reached.'); return; }
+      mining = true; miner.play('mine'); setStatus('Mining…');
+    });
+    ui.stop.addEventListener('click',  ()=>{ mining=false; miner.stop().setFrame(0); setStatus('Paused.'); });
+    ui.claim.addEventListener('click', ()=>{
+      for (let i=0;i<6;i++) this.time.delayedCall(i*80, ()=>spawnShine(this, shineGroup, 230+i*18, 120));
+      coinSfx.play();
+      setStatus('Claim event fired (서버 연동 지점).');
+    });
 
-  this.events.on('claim', () => {
-    // 코인 반짝 연출
-    for (let i=0;i<6;i++) this.time.delayedCall(i*80, () => spawnShine(this, shineGroup, 230+ i*18, 120));
-    coinSfx.play();
-  });
-
-  // 초깃값(대기)
-  this.events.emit('stop-mining');
-
-  // 외부 버튼 바인딩 (기존 페이지 버튼 id 사용)
-  bindUiButtons(this);
-}
-
-function update() { /* 필요 시 상태 기반 이펙트 확장 */ }
-
-// 파편/반짝 유틸
-function spawnDustBurst(scene, group, x, y) {
-  for (let i=0;i<6;i++) {
-    const p = group.get(x, y, 'dust');
-    if (!p) continue;
-    p.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.4,0.8)).setAlpha(0.9);
-    scene.physics.world.enable(p);
-    p.body.setVelocity(Phaser.Math.Between(60,160), Phaser.Math.Between(-220,-100));
-    p.body.setGravityY(400);
-    scene.tweens.add({ targets: p, alpha: 0, duration: 600, onComplete: () => { p.destroy(); }});
+    // Anti‑AFK: 5분마다 팝업
+    setInterval(()=>{ if(!mining) return; openAntiAfk(); }, 5*60*1000);
   }
-}
-function spawnShine(scene, group, x, y) {
-  const s = group.get(x, y, 'shine');
-  if (!s) return;
-  s.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.5,0.9)).setAlpha(0);
-  scene.tweens.add({ targets: s, y: y-30, alpha: 1, yoyo: true, duration: 420, onComplete: () => s.destroy() });
-}
 
-// 버튼 연결
-function bindUiButtons(scene){
-  const startBtn = document.getElementById('startBtn');
-  const stopBtn  = document.getElementById('stopBtn');
-  const claimBtn = document.getElementById('claimBtn');
+  function update(time, delta){
+    if (!mining) { lastTick = time; afkClock = time; return; }
+    // 포인트 증가(샘플): 초당 POINTS_PER_SEC, 일일 캡 도달 시 자동 정지
+    const dt = (time - (lastTick||time)) / 1000;
+    lastTick = time;
+    if (pToday < DAILY_CAP){
+      pToday = Math.min(DAILY_CAP, +(pToday + POINTS_PER_SEC * dt).toFixed(3));
+      ui.pNow.textContent = pToday.toFixed(3).replace(/\.000$/,'');
+      if (pToday >= DAILY_CAP){ mining=false; setStatus('Daily cap reached.'); }
+    }
+  }
 
-  if (startBtn) startBtn.addEventListener('click', () => scene.events.emit('start-mining'));
-  if (stopBtn)  stopBtn.addEventListener('click',  () => scene.events.emit('stop-mining'));
-  if (claimBtn) claimBtn.addEventListener('click', () => scene.events.emit('claim'));
-}
-</script>
+  // --- Effects ---
+  function spawnDustBurst(scene, group, x, y){
+    for (let i=0;i<6;i++){
+      const p = group.get(x, y, 'dust'); if(!p) continue;
+      p.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.4,0.8)).setAlpha(0.9);
+      scene.physics.world.enable(p);
+      p.body.setVelocity(Phaser.Math.Between(60,160), Phaser.Math.Between(-220,-100));
+      p.body.setGravityY(420);
+      scene.tweens.add({ targets:p, alpha:0, duration:600, onComplete:()=>p.destroy() });
+    }
+  }
+  function spawnShine(scene, group, x, y){
+    const s = group.get(x, y, 'shine'); if(!s) return;
+    s.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.5,0.9)).setAlpha(0);
+    scene.tweens.add({ targets:s, y:y-30, alpha:1, yoyo:true, duration:420, onComplete:()=>s.destroy() });
+  }
+
+  /* --------------- Anti‑AFK --------------- */
+  function openAntiAfk(){
+    const el = afk.el; el.classList.add('show'); el.setAttribute('aria-hidden','false');
+    afk.sec = 10;
+    afk.countdown.textContent = `남은 시간: ${afk.sec}초`;
+    clearInterval(afk.interval);
+    afk.interval = setInterval(()=>{
+      afk.sec--; afk.countdown.textContent = `남은 시간: ${afk.sec}초`;
+      if (afk.sec <= 0){ closeAntiAfk(false); }
+    }, 1000);
+    afk.ok.onclick = ()=> closeAntiAfk(true);
+    afk.cancel.onclick = ()=> closeAntiAfk(false);
+  }
+  function closeAntiAfk(continueMining){
+    clearInterval(afk.interval);
+    afk.el.classList.remove('show'); afk.el.setAttribute('aria-hidden','true');
+    if (continueMining){ setStatus('Mining…'); }
+    else { mining=false; setStatus('Paused by Anti‑AFK.'); }
+  }
+  </script>
+</body>
+</html>

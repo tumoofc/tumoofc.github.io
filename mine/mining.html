@@ -1,386 +1,141 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TUMO – Mining</title>
-<link rel="preconnect" href="https://unpkg.com">
-<script src="https://unpkg.com/@solana/web3.js@1.91.6/lib/index.iife.min.js"></script>
-<script src="https://unpkg.com/bs58@5.0.0/dist/bs58.min.js"></script>
-<style>
-  :root{
-    --card-w: min(860px, 92vw);
-    --gold-1:#ffd54f; --gold-2:#ffbf2b;
-  }
-  body{
-    margin:0; color:#fff; font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; text-align:center;
-    min-height:100dvh; padding:24px 12px;
-    background: radial-gradient(1200px 500px at 50% -10%, rgba(255,230,160,.35), transparent 60%),
-               linear-gradient(170deg, #5a1010, #8d1414 46%, #b51616 85%);
-    position: relative;
-  }
-  .wrap{max-width:var(--card-w); margin:0 auto}
-  h1{font-size:clamp(28px, 5vw, 44px); margin:18px 0 6px}
-  p.lead{opacity:.9; margin:6px 0 18px}
-  .row{
-    display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center; margin-bottom:14px;
-  }
-  .btn{
-    display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:14px; cursor:pointer; user-select:none;
-    font-weight:800; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#fff;
-    box-shadow:0 8px 24px rgba(0,0,0,.22);
-  }
-  .btn.gold{
-    background: linear-gradient(var(--gold-1), var(--gold-2));
-    border:1px solid rgba(255,220,120,.85); color:#111;
-  }
-  .btn:disabled{opacity:.5; cursor:not-allowed}
-  .pill{padding:10px 14px; border-radius:12px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2)}
-  .card{
-    width:var(--card-w); margin:14px auto; text-align:left;
-    background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.15); border-radius:16px;
-    box-shadow:0 10px 26px rgba(0,0,0,.35); overflow:hidden;
-  }
-  .card .hd{
-    padding:12px 16px; font-weight:900; background:rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.12)
-  }
-  .card .bd{padding:16px}
-  .grid{display:grid; grid-template-columns: 1fr auto; gap:8px 16px; align-items:center}
-  .label{opacity:.9}
-  .val{font-weight:900}
-  .bar{height:10px; background:rgba(255,255,255,.13); border-radius:8px; overflow:hidden}
-  .bar > i{display:block; height:100%; width:0%; background:linear-gradient(#ff944d, #ff5d2e)}
-  .muted{opacity:.8; font-size:13px}
-  footer{opacity:.85; margin-top:18px; font-size:13px}
-  a.link{color:#ffd}
+<!-- 1) Phaser CDN -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 
-  /* 언어 토글 */
-  .lang {
-    position: fixed; top: 14px; right: 14px; z-index: 9999;
-    display: inline-flex; gap: 8px; align-items: center;
-    padding: 8px 12px; border-radius: 14px; cursor:pointer;
-    background: rgba(0,0,0,.65); color:#fff; font-weight:800;
-    border: 1px solid rgba(255,255,255,.25);
-    box-shadow: 0 8px 20px rgba(0,0,0,.25);
-    user-select: none;
-  }
-  .lang small{opacity:.85}
-</style>
-</head>
-<body>
-  <!-- 언어 토글 -->
-  <button class="lang" onclick="toggleLang()">🌏 <small data-i18n="langBadge"></small></button>
-
-<div class="wrap">
-  <h1 data-i18n="title">Start Mining</h1>
-  <p class="lead" data-i18n="lead">Lightweight in-browser simulation. Signed updates can be verified by the server (no real crypto mining).</p>
-
-  <div class="row">
-    <span id="walletPill" class="pill" data-i18n="walletDisconnected">Wallet: Disconnected</span>
-    <button id="connectBtn" class="btn gold" data-i18n="connect">🔗 Connect Phantom</button>
-    <button id="disconnectBtn" class="btn" data-i18n="disconnect">⏏ Disconnect</button>
-
-    <a class="btn" href="/mine/board.html" data-i18n="leaderboard">🏆 Leaderboard</a>
-    <a class="btn" href="/" data-i18n="back">🏠 Back</a>
-  </div>
-
-  <div class="card">
-    <div class="hd" data-i18n="session">Session</div>
-    <div class="bd">
-      <div class="grid">
-        <div class="label" data-i18n="status">Status</div>
-        <div class="val" id="statusVal" data-i18n="paused">Paused</div>
-
-        <div class="label" data-i18n="points">Points</div>
-        <div class="val"><span id="pointsVal">0.000</span></div>
-
-        <div class="label" data-i18n="claimed">Claimed</div>
-        <div class="val"><span id="claimedVal">0.000</span></div>
-
-        <div class="label" data-i18n="hashrate">Hashrate (sim.)</div>
-        <div class="val"><span id="hashVal">0 H/s</span></div>
-      </div>
-
-      <div class="bar" style="margin:14px 0 10px">
-        <i id="hashBar"></i>
-      </div>
-
-      <div class="row">
-        <button id="startBtn" class="btn gold" data-i18n="start">▶ Start</button>
-        <button id="stopBtn" class="btn" data-i18n="stop">⏸ Stop</button>
-        <button id="resetBtn" class="btn" data-i18n="reset">↺ Reset</button>
-        <button id="claimBtn" class="btn gold" data-i18n="claimNow">✅ Claim Now</button>
-      </div>
-
-      <p class="muted" id="msg">—</p>
-    </div>
-  </div>
-
-  <footer data-i18n="footer">Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.</footer>
-</div>
+<!-- 2) Canvas 컨테이너 -->
+<div id="mine-canvas" style="width:100%;max-width:860px;margin:16px auto;border-radius:16px;overflow:hidden"></div>
 
 <script>
-/* ============== i18n ============== */
-const I18N = {
-  en: {
-    langBadge:"EN / KO",
-    title:"Start Mining",
-    lead:"Lightweight in-browser simulation. Signed updates can be verified by the server (no real crypto mining).",
-    walletDisconnected:"Wallet: Disconnected",
-    connect:"🔗 Connect Phantom",
-    disconnect:"⏏ Disconnect",
-    leaderboard:"🏆 Leaderboard",
-    back:"🏠 Back",
-    session:"Session",
-    status:"Status",
-    paused:"Paused",
-    points:"Points",
-    claimed:"Claimed",
-    hashrate:"Hashrate (sim.)",
-    start:"▶ Start",
-    stop:"⏸ Stop",
-    reset:"↺ Reset",
-    claimNow:"✅ Claim Now",
-    footer:"Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved."
-  },
-  ko: {
-    langBadge:"한/영 전환",
-    title:"채굴 시작",
-    lead:"브라우저에서 가볍게 시뮬레이션합니다. 서버는 서명된 업데이트로 검증할 수 있습니다(실제 채굴 아님).",
-    walletDisconnected:"지갑: 연결되지 않음",
-    connect:"🔗 팬텀 지갑 연결",
-    disconnect:"⏏ 연결 해제",
-    leaderboard:"🏆 리더보드",
-    back:"🏠 돌아가기",
-    session:"세션",
-    status:"상태",
-    paused:"일시정지",
-    points:"포인트",
-    claimed:"클레임 완료",
-    hashrate:"해시레이트(시뮬)",
-    start:"▶ 시작",
-    stop:"⏸ 정지",
-    reset:"↺ 초기화",
-    claimNow:"✅ 지금 클레임",
-    footer:"Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved."
+/** === CONFIG === */
+const ASSETS = {
+  miner:  'assets/miner_swing.png',  // 8프레임 스프라이트시트
+  dust:   'assets/dust.png',
+  shine:  'assets/shine.png',
+  swingSfx: 'assets/swing.mp3',
+  coinSfx:  'assets/coin.mp3'
+};
+const FRAME = { width: 256, height: 256, end: 7 }; // 0~7 총 8프레임
+
+/** === PHASER GAME === */
+let miningState = { running:false, crit:false };
+let sceneRef = null;
+
+const phaserConfig = {
+  type: Phaser.AUTO,
+  parent: 'mine-canvas',
+  width: 860,
+  height: 280,
+  backgroundColor: '#3b0d0d',
+  physics: { default: 'arcade' },
+  audio: { disableWebAudio: false },
+  scene: {
+    preload, create, update
   }
 };
-const LS_LANG="tumo_lang";
-let lang = localStorage.getItem(LS_LANG) || "en";
-function applyI18n(){
-  const t=I18N[lang];
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    const k=el.getAttribute("data-i18n");
-    if (t[k]!=null) el.textContent=t[k];
+
+const game = new Phaser.Game(phaserConfig);
+
+function preload() {
+  this.load.spritesheet('miner', ASSETS.miner, { frameWidth: FRAME.width, frameHeight: FRAME.height, endFrame: FRAME.end });
+  this.load.image('dust', ASSETS.dust);
+  this.load.image('shine', ASSETS.shine);
+  this.load.audio('swingSfx', ASSETS.swingSfx);
+  this.load.audio('coinSfx', ASSETS.coinSfx);
+
+  // 로딩 바(간단)
+  const w = this.cameras.main.width, h = this.cameras.main.height;
+  const g = this.add.graphics();
+  this.load.on('progress', v => {
+    g.clear().fillStyle(0xffd166,1).fillRect(w*0.1, h*0.85, (w*0.8)*v, 6);
   });
 }
-function toggleLang(){ lang=(lang==="en")?"ko":"en"; localStorage.setItem(LS_LANG,lang); applyI18n(); }
-document.addEventListener("DOMContentLoaded", applyI18n);
 
-/* ============== CONFIG ============== */
-const API_BASE   = "https://YOUR_API_DOMAIN.example.com/tumo"; // 서버 붙일 때 교체
-const API_MINING = API_BASE + "/mining";
-const API_CLAIM  = API_BASE + "/claim";
+function create() {
+  sceneRef = this;
 
-const SAVE_KEY_POINTS  = "tumo_points";
-const SAVE_KEY_CLAIMED = "tumo_claimed";
-const SAVE_KEY_SESSION = "tumo_session";
+  // 배경 데코
+  this.add.rectangle(0, 220, 2000, 8, 0x6f2f2f).setOrigin(0); // 지면
 
-/* ============== STATE/REFS ============== */
-let provider = null;
-let wallet  = null; // base58
-let mining  = false;
-let points  = Number(localStorage.getItem(SAVE_KEY_POINTS)  || "0");
-let claimed = Number(localStorage.getItem(SAVE_KEY_CLAIMED) || "0");
-let sessionId = localStorage.getItem(SAVE_KEY_SESSION) || crypto.randomUUID();
-localStorage.setItem(SAVE_KEY_SESSION, sessionId);
+  // 캐릭터
+  const miner = this.add.sprite(200, 190, 'miner', 0).setScale(0.9).setOrigin(0.5, 1.0);
+  this.anims.create({
+    key: 'mine',
+    frames: this.anims.generateFrameNumbers('miner', { start: 0, end: FRAME.end }),
+    frameRate: 12,
+    repeat: -1
+  });
 
-const $ = s => document.querySelector(s);
-const els = {
-  walletPill: $("#walletPill"),
-  statusVal:  $("#statusVal"),
-  pointsVal:  $("#pointsVal"),
-  claimedVal: $("#claimedVal"),
-  hashVal:    $("#hashVal"),
-  hashBar:    $("#hashBar"),
-  msg:        $("#msg"),
-  connect:    $("#connectBtn"),
-  disconnect: $("#disconnectBtn"),
-  start:      $("#startBtn"),
-  stop:       $("#stopBtn"),
-  reset:      $("#resetBtn"),
-  claim:      $("#claimBtn"),
-};
-function fmt(n){ return Number(n||0).toFixed(3); }
-function setMsg(t){ els.msg.textContent = t; }
-function refreshUI(){
-  els.pointsVal.textContent  = fmt(points);
-  els.claimedVal.textContent = fmt(claimed);
-  els.statusVal.textContent  = mining ? (lang==='ko'?'실행중':'Running') : (lang==='ko'?'일시정지':'Paused');
-}
+  // 파편 그룹
+  const dustGroup = this.add.group({ defaultKey: 'dust', maxSize: 40 });
+  const shineGroup = this.add.group({ defaultKey: 'shine', maxSize: 12 });
 
-/* ============== Phantom ============== */
-function getProvider(){
-  if ("solana" in window && window.solana?.isPhantom) return window.solana;
-  return null;
-}
-async function connectWallet(){
-  try{
-    provider = getProvider();
-    if (!provider){ setMsg("Phantom wallet not found."); return; }
-    const { publicKey } = await provider.connect({ onlyIfTrusted:false });
-    wallet = publicKey.toBase58();
-    els.walletPill.textContent = (lang==='ko'?'지갑: ':'Wallet: ') + wallet.slice(0,4) + "…" + wallet.slice(-4);
-    setMsg(lang==='ko'?'지갑 연결됨.':'Wallet connected.');
-  }catch(e){ setMsg(lang==='ko'?'연결 거부됨.':'Connect failed.'); }
-}
-async function disconnectWallet(){
-  try{ if (provider?.disconnect) await provider.disconnect(); }catch(e){}
-  wallet = null;
-  els.walletPill.textContent = (lang==='ko'?'지갑: 연결되지 않음':'Wallet: Disconnected');
-  setMsg(lang==='ko'?'연결 해제됨.':'Disconnected.');
-}
+  // 사운드
+  const swingSfx = this.sound.add('swingSfx', { volume: 0.25 });
+  const coinSfx  = this.sound.add('coinSfx',  { volume: 0.25 });
 
-/* ============== Mining Timer ============== */
-let tickHandle = null;
-let hashHandle = null;
-let accSinceLastSend = 0;
-const SEND_INTERVAL_MS = 30_000;
-
-function startMining(){
-  if (mining) return;
-  mining = true;
-  refreshUI();
-  setMsg(lang==='ko'?'시작되었습니다.':'Started.');
-
-  tickHandle = setInterval(()=>{
-    const delta = 0.005 + Math.random()*0.015;
-    points += delta;
-    accSinceLastSend += delta;
-    localStorage.setItem(SAVE_KEY_POINTS, String(points));
-    refreshUI();
-  }, 500);
-
-  hashHandle = setInterval(()=>{
-    const h = 80 + Math.floor(Math.random()*120);
-    els.hashVal.textContent = h + " H/s";
-    els.hashBar.style.width = Math.min(100, h/2) + "%";
-  }, 900);
-
-  scheduleSend();
-}
-function stopMining(){
-  mining = false;
-  clearInterval(tickHandle); tickHandle = null;
-  clearInterval(hashHandle); hashHandle = null;
-  refreshUI();
-  setMsg(lang==='ko'?'중지되었습니다.':'Stopped.');
-  sendUpdate().catch(()=>{});
-}
-function resetMining(){
-  mining = false;
-  clearInterval(tickHandle); tickHandle = null;
-  clearInterval(hashHandle); hashHandle = null;
-
-  points = 0;
-  accSinceLastSend = 0;
-  localStorage.setItem(SAVE_KEY_POINTS, "0");
-  refreshUI();
-  setMsg(lang==='ko'?'초기화 완료.':'Reset.');
-  sendUpdate(true).catch(()=>{});
-}
-let sendTimer = null;
-function scheduleSend(){
-  clearTimeout(sendTimer);
-  sendTimer = setTimeout(()=>sendUpdate().then(scheduleSend), SEND_INTERVAL_MS);
-}
-
-/* ============== Sign & Send ============== */
-async function signMessageObj(obj){
-  const message =
-    `TUMO-UPDATE|${obj.ts}|${obj.sessionId}|${obj.signer}|`+
-    `${obj.totalPoints.toFixed(6)}|${obj.deltaPoints.toFixed(6)}`;
-  const bytes = new TextEncoder().encode(message);
-  if (!provider || !wallet) return { message, signature:null, signer:null };
-  const sig = await provider.signMessage(bytes, "utf8");
-  return { message, signature: bs58.default.encode(sig.signature), signer: provider.publicKey.toBase58() };
-}
-async function sendUpdate(reset=false){
-  if (!API_BASE.startsWith("http")){
-    setMsg("[DRY RUN]"); accSinceLastSend = 0; return;
-  }
-  const delta = reset ? 0 : accSinceLastSend;
-  if (delta <= 0 && !reset) return;
-
-  const ts = Date.now();
-  const payload = {
-    chain: "solana", ts, sessionId,
-    signer: wallet || "anonymous",
-    totalPoints: points,
-    deltaPoints: reset ? 0 : delta
-  };
-  const signed = await signMessageObj(payload);
-  const body = { ...payload, ...signed };
-
-  try{
-    const r = await fetch(API_MINING, {
-      method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(body)
+  // 상태 핸들러
+  this.events.on('start-mining', () => {
+    miner.play('mine');
+    miningState.running = true;
+    // 스윙 타이밍에 맞춰 파편/사운드
+    this.time.addEvent({
+      delay: 250, loop: true, callback: () => {
+        if (!miningState.running) return;
+        swingSfx.play();
+        spawnDustBurst(this, dustGroup, 340, 190);
+        if (Phaser.Math.Between(0, 7) === 0) { // 가끔 크리티컬 반짝
+          spawnShine(this, shineGroup, 340, 150);
+        }
+      }
     });
-    const j = await r.json();
-    if (j.ok){ setMsg((lang==='ko'?'동기화 완료':'Synced') + (reset?' (reset)':'')); accSinceLastSend = 0; }
-    else{ setMsg("Server error: " + (j.error||"")); }
-  }catch(e){ setMsg("Send failed: " + e.message); }
+  });
+
+  this.events.on('stop-mining', () => {
+    miningState.running = false;
+    miner.stop().setFrame(0);
+  });
+
+  this.events.on('claim', () => {
+    // 코인 반짝 연출
+    for (let i=0;i<6;i++) this.time.delayedCall(i*80, () => spawnShine(this, shineGroup, 230+ i*18, 120));
+    coinSfx.play();
+  });
+
+  // 초깃값(대기)
+  this.events.emit('stop-mining');
+
+  // 외부 버튼 바인딩 (기존 페이지 버튼 id 사용)
+  bindUiButtons(this);
 }
 
-/* ============== Claim ============== */
-async function doClaim(){
-  const claimable = Math.max(0, points - claimed);
-  if (claimable <= 0){ setMsg(lang==='ko'?'클레임할 포인트가 없습니다.':'No claimable points.'); return; }
+function update() { /* 필요 시 상태 기반 이펙트 확장 */ }
 
-  if (!API_BASE.startsWith("http")){
-    setMsg("[DRY RUN]"); localStorage.setItem(SAVE_KEY_CLAIMED, String(points));
-    claimed = points; refreshUI(); return;
+// 파편/반짝 유틸
+function spawnDustBurst(scene, group, x, y) {
+  for (let i=0;i<6;i++) {
+    const p = group.get(x, y, 'dust');
+    if (!p) continue;
+    p.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.4,0.8)).setAlpha(0.9);
+    scene.physics.world.enable(p);
+    p.body.setVelocity(Phaser.Math.Between(60,160), Phaser.Math.Between(-220,-100));
+    p.body.setGravityY(400);
+    scene.tweens.add({ targets: p, alpha: 0, duration: 600, onComplete: () => { p.destroy(); }});
   }
-  if (!provider){ provider = getProvider(); }
-  if (!provider){ setMsg("Phantom wallet not found."); return; }
-
-  try{
-    const { publicKey } = await provider.connect({onlyIfTrusted:false});
-    const signer = publicKey.toBase58();
-
-    const ts = Date.now();
-    const message = `TUMO-CLAIM|${ts}|${signer}|${claimable.toFixed(6)}`;
-    const bytes   = new TextEncoder().encode(message);
-    const sig     = await provider.signMessage(bytes, "utf8");
-    const signature = bs58.default.encode(sig.signature);
-
-    const payload = { chain:"solana", ts, signer, message, signature, claimPoints: claimable };
-    const r = await fetch(API_CLAIM, {
-      method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(payload)
-    });
-    const j = await r.json();
-    if (j.ok){
-      localStorage.setItem(SAVE_KEY_CLAIMED, String(points));
-      claimed = points; refreshUI();
-      setMsg(lang==='ko'?'✅ 클레임 완료':'✅ Claim complete');
-    }else{
-      setMsg("Server error: " + (j.error||""));
-    }
-  }catch(e){ setMsg("Sign/Request failed: " + e.message); }
+}
+function spawnShine(scene, group, x, y) {
+  const s = group.get(x, y, 'shine');
+  if (!s) return;
+  s.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.5,0.9)).setAlpha(0);
+  scene.tweens.add({ targets: s, y: y-30, alpha: 1, yoyo: true, duration: 420, onComplete: () => s.destroy() });
 }
 
-/* ============== Wire-up ============== */
-els.connect.addEventListener("click", connectWallet);
-els.disconnect.addEventListener("click", disconnectWallet);
-els.start.addEventListener("click", startMining);
-els.stop.addEventListener("click", stopMining);
-els.reset.addEventListener("click", resetMining);
-els.claim.addEventListener("click", doClaim);
+// 버튼 연결
+function bindUiButtons(scene){
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn  = document.getElementById('stopBtn');
+  const claimBtn = document.getElementById('claimBtn');
 
-// init
-refreshUI();
+  if (startBtn) startBtn.addEventListener('click', () => scene.events.emit('start-mining'));
+  if (stopBtn)  stopBtn.addEventListener('click',  () => scene.events.emit('stop-mining'));
+  if (claimBtn) claimBtn.addEventListener('click', () => scene.events.emit('claim'));
+}
 </script>
-</body>
-</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TUMO – Mining (FINAL)</title>
+<title>TUMO – Mining (Pickaxe + Ore + Real Progress)</title>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 <style>
   :root{ --card-w:min(860px,92vw); --gold:#f4c063; --bg:#2c0606; --panel:#3b0d0d; }
@@ -18,7 +18,11 @@
   .btn.stop{ background:#3a3a3a; color:#eaeaea }
   .btn.claim{ background:#87e8a8; color:#00331b }
   #mine-canvas{ position:relative; z-index:1; width:100%; height:auto; display:block; background:var(--bg); border-radius:14px; overflow:hidden; }
-  .bar{ height:6px; background:#452020; border-radius:3px; margin:8px 0 0 }
+
+  /* 실제 진행바 */
+  .prog{ height:10px; background:#3d1b1b; border-radius:6px; overflow:hidden; margin:10px 2px 0 }
+  .prog-fill{ height:100%; width:0%; background:linear-gradient(90deg,#ffcc66,#ff9b3d); transition:width .2s ease; }
+
   .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin:8px 2px }
   .kpi{ font-size:14px; opacity:.95 }
   .cap{ font-weight:800; color:#ffd166 }
@@ -29,14 +33,17 @@
   <div class="wrap">
     <div class="title">Start Mining</div>
     <div class="card">
-      <!-- 클릭 폴백: onclick 으로도 동작하도록 -->
       <div class="toolbar">
         <button id="startBtn" class="btn start" onclick="startMiningBtn()">▶ Start</button>
         <button id="stopBtn"  class="btn stop"  onclick="stopMiningBtn()">Ⅱ Stop</button>
         <button id="claimBtn" class="btn claim" onclick="claimBtn()">✔ Claim</button>
       </div>
+
       <div id="mine-canvas"></div>
-      <div class="bar"></div>
+
+      <!-- 실제 진행바 -->
+      <div class="prog"><div id="progFill" class="prog-fill"></div></div>
+
       <div class="row">
         <div class="kpi">Status: <span id="status">Ready.</span></div>
         <div class="kpi">Today: <span id="pNow" class="cap">0</span> / <span id="pCap" class="cap">60</span> P</div>
@@ -46,23 +53,25 @@
 
 <script>
 /* ===== UI / CONFIG ===== */
-const DAILY_CAP = 60;
-const POINTS_PER_SEC = 0.6; // 데모용
+const DAILY_CAP = 60;             // 일일 상한 (UI/데모)
+const POINTS_PER_SEC = 0.6;       // 데모: 초당 포인트 (실제는 서버 검증/E_day 분배)
 const ui = {
   status: document.getElementById('status'),
   pNow:   document.getElementById('pNow'),
   pCap:   document.getElementById('pCap'),
   start:  document.getElementById('startBtn'),
   stop:   document.getElementById('stopBtn'),
-  claim:  document.getElementById('claimBtn')
+  claim:  document.getElementById('claimBtn'),
+  bar:    document.getElementById('progFill')
 }; ui.pCap.textContent = DAILY_CAP;
 function setStatus(t){ ui.status.textContent = t; }
+function setProgress(p){ ui.bar.style.width = Math.max(0, Math.min(100, p)) + '%'; }
 
 /* ===== Assets ===== */
 const PAGE_DIR   = location.pathname.replace(/[^\/]+$/, ''); // '/mine/'
 const ASSET_BASE = PAGE_DIR + 'assets/';
 const ASSETS = {
-  miner : ASSET_BASE + 'tutu_swing.png',  // 256x256 x 8프레임
+  miner : ASSET_BASE + 'tutu_swing.png',  // 256x256 x 8
   dust  : ASSET_BASE + 'dust.png',
   shine : ASSET_BASE + 'shine.png',
   swing : ASSET_BASE + 'swing.mp3',
@@ -82,9 +91,12 @@ const game = new Phaser.Game({
 });
 
 function preload(){
+  // 로딩바(Phaser 내부)
   const g=this.add.graphics();
-  const draw=(v)=>{ g.clear().fillStyle(0xf4c063,1).fillRect(W*0.1,H*0.90,(W*0.8)*v,6); };
-  this.load.on('progress',draw); this.load.on('complete',()=>g.destroy());
+  this.load.on('progress', v=>{
+    g.clear().fillStyle(0xf4c063,1).fillRect(W*0.1,H*0.90,(W*0.8)*v,6);
+  });
+  this.load.on('complete', ()=>g.destroy());
 
   this.load.spritesheet('miner',ASSETS.miner,{frameWidth:256,frameHeight:256,endFrame:7});
   this.load.image('dust',ASSETS.dust);
@@ -92,8 +104,15 @@ function preload(){
   this.load.audio('swing',ASSETS.swing);
   this.load.audio('coin', ASSETS.coin);
 
-  makeOreTex(this);      // 'ore'
-  makePickaxeTex(this);  // 'pickaxe'
+  // 텍스처 미존재 대비: 즉석 생성( dust / shine ) - 있으면 skip
+  this.load.once('complete', ()=>{
+    if(!this.textures.exists('dust'))  makeDustTex(this);
+    if(!this.textures.exists('shine')) makeShineTex(this);
+  });
+
+  // 픽액스/광석은 코드로 생성
+  makeOreTex(this);      // key: 'ore'
+  makePickaxeTex(this);  // key: 'pickaxe'
 }
 
 function create(){
@@ -101,18 +120,21 @@ function create(){
   setStatus('Ready.');
   this.add.rectangle(0,220,2000,8,0x4a1e1e,0.7).setOrigin(0);
 
-  minerSprite = this.add.sprite(200,190,'miner',0).setOrigin(0.5,1.0).setScale(0.9);
+  // 캐릭터
+  minerSprite = this.add.sprite(220,190,'miner',0).setOrigin(0.5,1.0).setScale(0.9);
   this.anims.create({ key:'mine', frames:this.anims.generateFrameNumbers('miner',{start:0,end:7}), frameRate:12, repeat:-1 });
 
-  ore     = this.add.image(360,210,'ore').setOrigin(0.5,1).setScale(1.0);
-  pickaxe = this.add.image(248,138,'pickaxe').setOrigin(0.15,0.85).setScale(0.95).setAngle(-35);
+  // 광석 & 픽액스 (좌표 재설정: 곡괭이가 광석을 정확히 치게)
+  ore     = this.add.image(440, 210, 'ore').setOrigin(0.5,1).setScale(1.05);
+  // 피벗(손잡이 하단 쪽) → 스윙 시 머리가 ore 쪽으로
+  pickaxe = this.add.image(290, 150, 'pickaxe').setOrigin(0.15,0.85).setScale(1.0).setAngle(-70);
 
-  dustGroup  = this.add.group({ defaultKey:'dust',  maxSize:40 });
-  shineGroup = this.add.group({ defaultKey:'shine', maxSize:12 });
+  dustGroup  = this.add.group({ defaultKey:'dust',  maxSize:60 });
+  shineGroup = this.add.group({ defaultKey:'shine', maxSize:20 });
   swingSfx   = this.sound.add('swing',{volume:0.22});
   coinSfx    = this.sound.add('coin',{volume:0.22});
 
-  // 보조: addEventListener도 그대로 유지(이중 바인딩)
+  // 버튼(이중 바인딩)
   ui.start.addEventListener('click', startMiningBtn);
   ui.stop .addEventListener('click', stopMiningBtn);
   ui.claim.addEventListener('click', claimBtn);
@@ -121,79 +143,102 @@ function create(){
 function update(time,delta){
   if(!mining){ lastTick=time; return; }
   const dt=(time-(lastTick||time))/1000; lastTick=time;
+
   if(pToday<DAILY_CAP){
     pToday=Math.min(DAILY_CAP, +(pToday + POINTS_PER_SEC*dt).toFixed(3));
     ui.pNow.textContent=pToday.toFixed(3).replace(/\.000$/,'');
+    setProgress((pToday/DAILY_CAP)*100);
     if(pToday>=DAILY_CAP){ mining=false; stopSwingLoop(); setStatus('Daily cap reached.'); }
   }
 }
 
-/* ===== 버튼 폴백 (전역) ===== */
+/* ===== 버튼 폴백(전역 함수) ===== */
 function startMiningBtn(){
   if(!sceneRef){ setStatus('Loading…'); return; }
   if (pToday >= DAILY_CAP){ setStatus('Daily cap reached.'); return; }
-  mining=true;
-  try{ minerSprite.play('mine'); }catch{}
-  startSwingLoop();
-  setStatus('Mining…');
+  mining=true; minerSprite.play('mine'); startSwingLoop(); setStatus('Mining…');
 }
 function stopMiningBtn(){
-  mining=false; stopSwingLoop();
-  try{ minerSprite.stop().setFrame(0); }catch{}
-  setStatus('Paused.');
+  mining=false; stopSwingLoop(); minerSprite.stop().setFrame(0); setStatus('Paused.');
 }
 function claimBtn(){
-  try{ coinSfx?.play(); }catch{}
-  for (let i=0;i<6;i++) sceneRef.time.delayedCall(i*80, ()=>spawnShine(sceneRef, shineGroup, 230+i*18, 120));
+  coinSfx?.play();
+  // 축하 반짝
+  for (let i=0;i<6;i++) sceneRef.time.delayedCall(i*80, ()=>spawnShine(sceneRef, shineGroup, 260+i*18, 120));
   setStatus('Claim event fired (서버 연동 지점).');
 }
 
 /* ===== 스윙 루프 & 이펙트 ===== */
 function swingOnce(){
   if(!mining || !sceneRef) return;
-  pickaxe.setAngle(-50);
+
+  // 스윙 각도/궤적: 시작(-70) → 히트(+5) → 되돌림(-70)
+  pickaxe.setAngle(-70);
   sceneRef.tweens.add({
-    targets: pickaxe, angle: 15, duration: 220, ease:'Cubic.InOut',
+    targets: pickaxe,
+    angle: 5,
+    duration: 240,
+    ease: 'Cubic.InOut',
     onComplete: ()=>{
-      spawnDustBurst(sceneRef, dustGroup, ore.x-10, ore.y-20);
-      if (Phaser.Math.Between(0,3)===0) spawnShine(sceneRef, shineGroup, ore.x-6, ore.y-50);
+      // 히트 지점 계산(광석 앞쪽)
+      const hitX = ore.x - 12, hitY = ore.y - 24;
+      spawnDustBurst(sceneRef, dustGroup, hitX, hitY);
+      if (Phaser.Math.Between(0,3)===0) spawnShine(sceneRef, shineGroup, hitX, hitY-28);
+      // 되돌림
+      sceneRef.tweens.add({ targets: pickaxe, angle: -70, duration: 180, ease:'Cubic.Out' });
     }
   });
+
+  // 사운드
   try{
     if (swingSfx?.context?.state==='suspended') swingSfx.context.resume();
     swingSfx?.play();
   }catch{}
 }
-function startSwingLoop(){ stopSwingLoop(); swingLoop = sceneRef.time.addEvent({ delay:300, loop:true, callback:swingOnce }); }
+function startSwingLoop(){ stopSwingLoop(); swingLoop = sceneRef.time.addEvent({ delay:320, loop:true, callback:swingOnce }); }
 function stopSwingLoop(){ if(swingLoop){ swingLoop.remove(false); swingLoop=null; } }
 
-/* ===== 도형 텍스처 ===== */
+/* ===== 프로시저럴 텍스처 & 이펙트 ===== */
 function spawnDustBurst(scene, group, x, y){
-  for(let i=0;i<6;i++){
+  for(let i=0;i<7;i++){
     const p=group.get(x,y,'dust'); if(!p) continue;
-    p.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.4,0.8)).setAlpha(0.9);
+    p.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.35,0.8)).setAlpha(0.95);
     scene.physics.world.enable(p);
-    p.body.setVelocity(Phaser.Math.Between(60,160), Phaser.Math.Between(-220,-100));
-    p.body.setGravityY(420);
-    scene.tweens.add({ targets:p, alpha:0, duration:600, onComplete:()=>p.destroy() });
+    p.body.setVelocity(Phaser.Math.Between(80,160), Phaser.Math.Between(-240,-120));
+    p.body.setGravityY(460);
+    scene.tweens.add({ targets:p, alpha:0, duration:650, onComplete:()=>p.destroy() });
   }
 }
 function spawnShine(scene, group, x, y){
   const s=group.get(x,y,'shine'); if(!s) return;
-  s.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.5,0.9)).setAlpha(0);
-  scene.tweens.add({ targets:s, y:y-30, alpha:1, yoyo:true, duration:420, onComplete:()=>s.destroy() });
+  s.setActive(true).setVisible(true).setScale(Phaser.Math.FloatBetween(0.55,0.9)).setAlpha(0);
+  scene.tweens.add({ targets:s, y:y-32, alpha:1, yoyo:true, duration:460, onComplete:()=>s.destroy() });
 }
+// dust 텍스처(원형 파티클) 생성
+function makeDustTex(scene){
+  const g=scene.add.graphics();
+  g.fillStyle(0x7a5b4b,1).fillCircle(8,8,8);
+  g.generateTexture('dust',16,16); g.destroy();
+}
+// shine 텍스처(별) 생성
+function makeShineTex(scene){
+  const g=scene.add.graphics(); g.fillStyle(0xffe08a,1);
+  g.fillTriangle(8,0, 12,16, 4,16); g.fillTriangle(0,8, 16,12, 16,4);
+  g.generateTexture('shine',16,16); g.destroy();
+}
+// 광석
 function makeOreTex(scene){
   const g=scene.add.graphics();
   g.fillStyle(0x6b4d3f,1).fillEllipse(60,60,118,56);
   g.fillStyle(0x7a5b4b,1).fillEllipse(42,62,52,28); g.fillEllipse(78,60,46,26);
   g.generateTexture('ore',120,80); g.destroy();
 }
+// 픽액스(손잡이+머리)
 function makePickaxeTex(scene){
   const g=scene.add.graphics();
-  g.fillStyle(0x8b5a2b,1).fillRoundedRect(28,12,10,64,4);           // handle
-  g.fillStyle(0xc8cbd1,1).fillRoundedRect(8,2,44,16,6);             // head
-  g.fillStyle(0x9aa0a6,1).fillTriangle(40,2,62,16,40,30);           // tip
+  g.fillStyle(0x8b5a2b,1).fillRoundedRect(28,12,10,64,4);     // handle
+  g.fillStyle(0xc8cbd1,1).fillRoundedRect(8,2,44,16,6);       // head
+  g.fillStyle(0x9aa0a6,1).fillTriangle(40,2,62,16,40,30);     // tip
   g.generateTexture('pickaxe',64,80); g.destroy();
 }
 </script>

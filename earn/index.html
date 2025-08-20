@@ -1,1 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TUMO – Earn Hub</title>
+  <style>
+    body{
+      margin:0; font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; color:#111; text-align:center;
+      background:
+        radial-gradient(circle at 50% 36%,
+          rgba(255,245,190,1) 0%,
+          rgba(255,235,140,.85) 28%,
+          rgba(255,220,80,.55) 56%,
+          rgba(255,200,40,.28) 78%,
+          rgba(255,190,0,.12) 92%,
+          rgba(255,190,0,0) 100%),
+        url("../assets/Chat.png") center top / cover no-repeat,
+        #ffe680;
+      background-attachment: fixed;
+      padding: clamp(18px, 3vw, 30px) 12px;
+    }
+    .wrap{ width:min(1100px, 95vw); margin:0 auto; }
+    h1{ font-size: clamp(26px, 4.6vw, 40px); margin: 0 0 8px; font-weight:900; text-shadow:0 2px 8px rgba(255,255,255,.4); }
+    p.lead{ margin: 4px 0 18px; opacity:.9 }
+    .actions{ display:flex; gap:10px; justify-content:center; margin-bottom:16px }
+    .btn{
+      display:inline-flex; align-items:center; gap:10px; padding:12px 18px; border-radius:14px;
+      font-weight:800; text-decoration:none; cursor:pointer;
+      background:#ffd633; color:#111; border:1px solid rgba(255,230,120,.9); box-shadow:0 10px 24px rgba(0,0,0,.18);
+    }
+    .btn.outline{ background:rgba(255,255,255,.2); color:#111; }
+    .grid{ display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-top:16px }
+    .card{
+      background: rgba(255,255,255,.12); border:1px solid rgba(0,0,0,.12); border-radius:14px; padding:16px; text-align:left;
+      box-shadow:0 10px 24px rgba(0,0,0,.18); backdrop-filter:saturate(120%);
+    }
+    .row{ display:flex; align-items:center; gap:12px; margin-bottom:6px }
+    .icon{ width:44px; height:44px; border-radius:10px; object-fit:cover }
+    h3{ margin:0; font-size:20px }
+    p{ margin:6px 0 12px; opacity:.9; line-height:1.45 }
+    .card .links{ display:flex; gap:8px; flex-wrap:wrap }
+    .chip{ display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:12px; font-weight:800;
+      background:#ffd54f; color:#111; border:1px solid rgba(255,230,120,.9) }
+    .chip.outline{ background: rgba(255,255,255,.15); color:#111; }
+    footer{margin-top:20px; opacity:.85; font-size:13px}
+    /* 언어 토글 */
+    .lang {
+      position: fixed; top: 14px; right: 14px; z-index: 9999;
+      display: inline-flex; gap: 8px; align-items: center;
+      padding: 8px 12px; border-radius: 14px; cursor:pointer;
+      background: rgba(0,0,0,.65); color:#fff; font-weight:800;
+      border: 1px solid rgba(255,255,255,.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+      user-select: none;
+    }
+    .lang small{opacity:.85}
+  </style>
+  <script>
+    const I18N = {
+      en: {
+        back: "← Back to Home",
+        title: "Earn Hub",
+        lead: "Choose how you want to earn TUMO.",
+        miningTitle: "Web Mining",
+        miningDesc: "Earn points in your browser and later convert them into TUMO. (Supports Phantom Wallet)",
+        startMining: "⛏ Start Mining",
+        leaderboard: "🏆 Leaderboard",
+        tapTitle: "Tap Game",
+        tapDesc: "Play simple tap/reaction games to earn rewards. (Ad recharge)",
+        playSoon: "▶ Play (soon)",
+        puzzleTitle: "Puzzle Quest",
+        puzzleDesc: "Complete puzzles/quests to earn extra points. Daily missions included.",
+        puzzleStart: "🧩 Start (soon)",
+        streakTitle: "Streak Bonus",
+        streakDesc: "Daily check-in bonus. Get extra points/multipliers every 7-day streak.",
+        streakStart: "🔥 Check-in (soon)",
+        footer: "Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.",
+        langBadge: "EN / KO"
+      },
+      ko: {
+        back: "← 메인으로",
+        title: "코인 얻기 허브",
+        lead: "원하는 방식으로 TUMO를 획득하세요.",
+        miningTitle: "웹 채굴",
+        miningDesc: "브라우저에서 가볍게 포인트를 쌓고, 나중에 TUMO로 교환하세요. (Phantom 지갑 지원)",
+        startMining: "⛏ 채굴 시작",
+        leaderboard: "🏆 리더보드",
+        tapTitle: "탭 게임",
+        tapDesc: "간단한 탭/반응 게임으로 보상을 획득하세요. (광고 시 리차지)",
+        playSoon: "▶ 플레이 (준비중)",
+        puzzleTitle: "퍼즐 퀘스트",
+        puzzleDesc: "퍼즐/퀘스트를 완료하고 추가 포인트를 적립하세요. 일일 미션 제공.",
+        puzzleStart: "🧩 시작 (준비중)",
+        streakTitle: "스트릭 보너스",
+        streakDesc: "연속 접속 보너스. 7일 스트릭마다 추가 포인트/배수 제공.",
+        streakStart: "🔥 출석체크 (준비중)",
+        footer: "Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.",
+        langBadge: "한/영 전환"
+      }
+    };
+    const LS_LANG = "tumo_lang";
+    let lang = localStorage.getItem(LS_LANG) || "en";
+    function applyI18n(){
+      const t = I18N[lang];
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const k = el.getAttribute("data-i18n");
+        if (t[k]) el.textContent = t[k];
+      });
+    }
+    function toggleLang(){
+      lang = (lang==="en") ? "ko":"en";
+      localStorage.setItem(LS_LANG, lang);
+      applyI18n();
+    }
+    document.addEventListener("DOMContentLoaded", applyI18n);
+  </script>
+</head>
+<body>
+  <!-- 언어 토글 -->
+  <button class="lang" onclick="toggleLang()">🌏 <small data-i18n="langBadge"></small></button>
 
+  <div class="wrap">
+    <div class="actions">
+      <a class="btn outline" href="/" data-i18n="back"></a>
+    </div>
+
+    <h1 data-i18n="title"></h1>
+    <p class="lead" data-i18n="lead"></p>
+
+    <div class="grid">
+      <!-- Web Mining -->
+      <article class="card">
+        <div class="row">
+          <img class="icon" src="../assets/tumo_face.png" alt="Mining">
+          <h3 data-i18n="miningTitle"></h3>
+        </div>
+        <p data-i18n="miningDesc"></p>
+        <div class="links">
+          <a class="chip" href="/mine/mining.html" data-i18n="startMining"></a>
+          <a class="chip outline" href="/mine/board.html" data-i18n="leaderboard"></a>
+        </div>
+      </article>
+
+      <!-- Tap Game -->
+      <article class="card">
+        <div class="row">
+          <img class="icon" src="../assets/tmc_coin.png" alt="Tap">
+          <h3 data-i18n="tapTitle"></h3>
+        </div>
+        <p data-i18n="tapDesc"></p>
+        <div class="links">
+          <a class="chip outline" href="/tap/index.html" data-i18n="playSoon"></a>
+        </div>
+      </article>
+
+      <!-- Puzzle Quest -->
+      <article class="card">
+        <div class="row">
+          <img class="icon" src="../assets/512TMC.png" alt="Puzzle">
+          <h3 data-i18n="puzzleTitle"></h3>
+        </div>
+        <p data-i18n="puzzleDesc"></p>
+        <div class="links">
+          <a class="chip outline" href="/quest/index.html" data-i18n="puzzleStart"></a>
+        </div>
+      </article>
+
+      <!-- Streak Bonus -->
+      <article class="card">
+        <div class="row">
+          <img class="icon" src="../assets/tumo_face.png" alt="Streak">
+          <h3 data-i18n="streakTitle"></h3>
+        </div>
+        <p data-i18n="streakDesc"></p>
+        <div class="links">
+          <a class="chip outline" href="/streak/index.html" data-i18n="streakStart"></a>
+        </div>
+      </article>
+    </div>
+
+    <footer data-i18n="footer"></footer>
+  </div>
+</body>
+</html>

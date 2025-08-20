@@ -8,27 +8,20 @@
     :root{
       --h1: clamp(26px, 5vw, 52px);
       --lead: clamp(14px, 1.7vw, 18px);
-
-      /* Buttons bigger */
+      --icon: clamp(96px, 12vw, 128px);
+      --symbols-bottom: clamp(46px, 7vw, 80px);
+      --hero-w: min(90vw, 800px);
+      --wrap-w: min(94vw, 980px);
       --btn-py: clamp(12px, 1.6vw, 16px);
       --btn-px: clamp(22px, 2.8vw, 32px);
       --btn-radius: 18px;
-
-      --icon: clamp(96px, 12vw, 128px);
-      --symbols-bottom: clamp(46px, 7vw, 80px);
-
-      --bot: clamp(92px, 18vw, 200px);
-      --wrap-w: min(94vw, 980px);
-      --hero-w: min(90vw, 800px);
     }
 
+    /* 골드 회로 배경 (원본 톤) */
     html,body{height:100%}
-
-    /* 밝은 골드 + 회로 */
     body{
-      margin:0; text-align:center;
+      margin:0; text-align:center; color:#111;
       font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
-      color:#111;
       background:
         radial-gradient(circle at 50% 36%,
           rgba(255,245,190,1) 0%,
@@ -42,38 +35,30 @@
       background-attachment: fixed;
       padding: clamp(18px, 3vw, 30px) 12px;
     }
-    .wrap{ width:var(--wrap-w); margin:0 auto; }
+    @media (max-width:900px){ body{ background-attachment: scroll; } }
 
+    .wrap{ width:var(--wrap-w); margin:0 auto; }
     .symbols{
       margin: clamp(10px, 2vw, 18px) auto var(--symbols-bottom);
       display:flex; justify-content:center; align-items:center;
-      gap: clamp(18px, 3vw, 26px);
-      flex-wrap:wrap;
+      gap: clamp(18px, 3vw, 26px); flex-wrap:wrap;
     }
-    .symbols img{
-      width:var(--icon); height:var(--icon); object-fit:contain;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,.3));
-    }
+    .symbols img{ width:var(--icon); height:var(--icon); object-fit:contain; filter: drop-shadow(0 6px 18px rgba(0,0,0,.3)); }
 
     .hero{ width: var(--hero-w); margin: 0 auto; }
-
     h1{
-      font-size:var(--h1); line-height:1.18;
-      margin: 0 auto clamp(14px, 2.6vw, 26px);
-      font-weight:900;
-      text-shadow:0 2px 8px rgba(255,255,255,.4);
+      font-size:var(--h1); line-height:1.18; margin: 0 auto clamp(14px, 2.6vw, 26px);
+      font-weight:900; text-shadow:0 2px 8px rgba(255,255,255,.4);
     }
     .subtitle{
-      margin:0 auto clamp(16px, 3vw, 28px);
-      opacity:.95; font-style:italic;
+      margin:0 auto clamp(16px, 3vw, 28px); opacity:.95; font-style:italic;
       font-size: clamp(15px, 1.8vw, 19px);
     }
     .lead{
-      margin:0 auto clamp(20px, 3vw, 34px);
-      max-width: 760px;
+      margin:0 auto clamp(20px, 3vw, 34px); max-width: 760px;
       font-size: var(--lead); line-height:1.6;
     }
-    .lead .brand{color:#ff6f3c; font-weight:900;}
+    .lead .brand{ color:#ff6f3c; font-weight:900; }
 
     .actions{
       display:flex; gap: clamp(14px, 3vw, 22px);
@@ -84,71 +69,81 @@
       display:inline-flex; align-items:center; gap:12px;
       padding: var(--btn-py) var(--btn-px);
       border-radius: var(--btn-radius);
-      font-weight:800; text-decoration:none;
+      font-weight:800; text-decoration:none; cursor:pointer;
       background:#ffd633; color:#111;
       border:1px solid rgba(255,230,120,.95);
-      box-shadow:
-        0 10px 24px rgba(0,0,0,.18),
-        inset 0 1px 0 rgba(255,255,255,.6);
+      box-shadow:0 10px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.6);
       transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-      will-change: transform;
     }
     .btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
-    .btn:active{ transform: translateY(0); filter: brightness(.98); }
-
-    /* ▶ 우측 빨간 CTA */
     .btn.red{
-      background: linear-gradient(#ff5a3a, #e5381e);
-      color:#fff;
-      border:1px solid rgba(210,20,0,.75);
-      box-shadow:
-        0 12px 26px rgba(229,56,30,.28),
-        inset 0 1px 0 rgba(255,180,170,.6);
+      background: linear-gradient(#ff5a3a, #e5381e); color:#fff; border:1px solid rgba(210,20,0,.75);
+      box-shadow: 0 12px 26px rgba(229,56,30,.28), inset 0 1px 0 rgba(255,180,170,.6);
     }
 
     .bot{
-      width:var(--bot); height:auto;
+      width: clamp(92px, 18vw, 200px); height:auto;
       margin: clamp(20px, 3.4vw, 34px) auto clamp(8px, 1.4vw, 12px);
-      display:block;
-      filter: drop-shadow(0 10px 28px rgba(0,0,0,.3));
+      display:block; filter: drop-shadow(0 10px 28px rgba(0,0,0,.3));
       max-width: 70vw;
     }
 
     .info{
-      width: var(--hero-w);
-      margin: 12px auto 0;
-      font-size: clamp(14px, 1.55vw, 15px);
+      width: var(--hero-w); margin: 12px auto 0; font-size: clamp(14px, 1.55vw, 15px);
       line-height:1.72; color:#1c1600;
     }
     .info .row{margin:6px 0}
     .info a{ color:#0645ad; text-decoration: underline; }
 
     footer{
-      width: var(--hero-w);
-      margin: clamp(18px, 2.8vw, 30px) auto 0;
-      font-size: clamp(12px, 1.5vw, 13px);
-      opacity:.9;
+      width: var(--hero-w); margin: clamp(18px, 2.8vw, 30px) auto 0;
+      font-size: clamp(12px, 1.5vw, 13px); opacity:.9;
     }
 
-    /* X(우하단) */
-    .x-icon{
-      position: fixed; bottom: 20px; right: 20px;
-      z-index: 9999;
-      background:#000; border-radius:50%;
-      padding:10px;
-      display:inline-flex;align-items:center;justify-content:center;
-      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    /* === Earn Hub === */
+    .earn-hub { margin: 36px auto 24px; width: min(980px, 94vw); }
+    .earn-hub h2 { font-size: clamp(20px, 3vw, 28px); margin: 0 0 14px; font-weight: 900; }
+    .earn-grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
-    .x-icon img{ width:28px; height:28px; }
+    .earn-card {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+    .earn-card:hover { transform: translateY(-2px); filter: brightness(1.03); }
+    .earn-card .row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .earn-card img.icon { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+    .earn-card h3 { margin: 0; font-size: 18px; }
+    .earn-card p { margin: 6px 0 12px; opacity: .9; line-height: 1.45; }
+    .earn-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .earn-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 12px; text-decoration: none; font-weight: 800;
+      border: 1px solid rgba(255,255,255,.2); background: #ffd54f; color: #111;
+    }
+    .earn-btn.outline { background: rgba(255,255,255,.10); color: #fff; border-color: rgba(255,255,255,.25); }
+    .badge-new {
+      display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px;
+      background:#1a1a1a; color:#ffd54f; border:1px solid rgba(255,213,79,.6); margin-left:8px;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+
+    <!-- 상단 심볼 -->
     <div class="symbols">
       <img src="./assets/512TMC.png" alt="TUMO Coin">
       <img src="./assets/ChatG.png"  alt="TUMO Symbol">
     </div>
 
+    <!-- 히어로 -->
     <div class="hero">
       <h1>The AI-Born Web3 Ecosystem — Built for Utility, Driven by Community.</h1>
       <p class="subtitle">(AI-designed, User-owned — AI-Born)</p>
@@ -159,13 +154,73 @@
       </p>
 
       <div class="actions">
-        <a href="#about" class="btn">🌐 About TUMO</a>
-        <a href="/mine/mining.html" class="btn red">⛏ Start Mining</a>
+        <!-- 허브로 스크롤 유도 -->
+        <a href="#earn-hub" class="btn">🌐 About TUMO</a>
+        <a href="#earn-hub" class="btn red">⛏ Go to Earn Hub</a>
       </div>
     </div>
 
+    <!-- 캐릭터 (투명 PNG 권장) -->
     <img src="./assets/tutu.png" alt="Tumo Bot" class="bot" />
 
+    <!-- === EARN HUB: 코인 얻기 선택 화면 === -->
+    <section class="earn-hub" id="earn-hub">
+      <h2>Earn Hub <span class="badge-new">NEW</span></h2>
+      <div class="earn-grid">
+
+        <!-- 1) 채굴 (활성) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/tumo_face.png" alt="Mining">
+            <h3>Web Mining</h3>
+          </div>
+          <p>브라우저에서 가볍게 포인트를 쌓고, 나중에 TUMO로 교환하세요. (Phantom 연결 지원)</p>
+          <div class="earn-actions">
+            <a class="earn-btn" href="/mine/mining.html">⛏ Start Mining</a>
+            <a class="earn-btn outline" href="/mine/board.html">🏆 Leaderboard</a>
+          </div>
+        </article>
+
+        <!-- 2) Tap Game (자리표시자) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/tmc_coin.png" alt="Tap">
+            <h3>Tap Game</h3>
+          </div>
+          <p>간단한 탭/반응 게임으로 보상을 획득하세요. (광고 시 리차지)</p>
+          <div class="earn-actions">
+            <a class="earn-btn outline" href="/tap/index.html">▶ Play (soon)</a>
+          </div>
+        </article>
+
+        <!-- 3) Puzzle Quest (자리표시자) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/512TMC.png" alt="Puzzle">
+            <h3>Puzzle Quest</h3>
+          </div>
+          <p>퍼즐/퀘스트를 완료하고 추가 포인트를 적립하세요. 일일 미션 제공.</p>
+          <div class="earn-actions">
+            <a class="earn-btn outline" href="/quest/index.html">🧩 Start (soon)</a>
+          </div>
+        </article>
+
+        <!-- 4) Streak Bonus (자리표시자) -->
+        <article class="earn-card">
+          <div class="row">
+            <img class="icon" src="./assets/tumo_face.png" alt="Streak">
+            <h3>Streak Bonus</h3>
+          </div>
+          <p>연속 접속 보너스. 7일 스트릭마다 추가 포인트/배수 제공.</p>
+          <div class="earn-actions">
+            <a class="earn-btn outline" href="/streak/index.html">🔥 Check-in (soon)</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- 소개/푸터 -->
     <h1 id="about">🌐 Welcome to TUMO</h1>
     <div class="info">
       <div class="row">Website: <a href="https://tumoofc.github.io">https://tumoofc.github.io</a></div>
@@ -177,9 +232,5 @@
       Symbol & Logo © TUMO Foundation · © 2025 TUMO Foundation. All rights reserved.
     </footer>
   </div>
-
-  <a href="https://x.com/TumoOfficial" target="_blank" rel="noopener" class="x-icon">
-    <img src="./assets/x_icon.png" alt="X">
-  </a>
 </body>
 </html>
